@@ -5,6 +5,8 @@ const ConflictingRequest = require('../errors/conflicting-request');
 const NotFoundError = require('../errors/not-found-err');
 const jwtSign = require('../utils/jwt-sign');
 const { ERROR_CODE } = require('../utils/error-code');
+const { NODE_ENV, JWT_SECRET } = process.env;
+const jwt = require('jsonwebtoken');
 
 const getUsers = async (req, res, next) => {
   try {
@@ -69,19 +71,20 @@ const createUser = (req, res, next) => {
 
 const login = (req, res, next) => {
   const { email, password } = req.body;
+
   return User.findUser(email, password)
     .then((user) => {
-      if (!user) {
-        throw new Unautorized('Неправильные почта или пароль');
-      }
-      return bcrypt.compare(password, user.password)
-        .then((matched) => {
-          if (!matched) {
-            throw new Unautorized('Неправильные почта или пароль');
-          }
-          const token = jwtSign(user._id);
-          res.send({ token });
-        });
+      const token = jwt.sign(
+        { _id: user._id },
+        NODE_ENV === 'production' ? JWT_SECRET : 'the-secret-key',
+        { expiresIn: '7d' },
+      );
+      res.cookie('jwt', token, {
+        maxAge: 604800000,
+        httpOnly: true,
+        sameSite: true,
+      })
+        .send(user);
     })
     .catch(next);
 };
