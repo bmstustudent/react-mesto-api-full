@@ -112,7 +112,7 @@ const updateAvatarUser = async (req, res, next) => {
       err.statusCode = ERROR_CODE;
     }
     next(err);
-    console.log(err.stack);
+    console.log.trace(err);
   }
 };
 
