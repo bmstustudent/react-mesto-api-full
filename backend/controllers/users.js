@@ -1,8 +1,9 @@
 const bcrypt = require('bcryptjs');
 const User = require('../models/user');
-const Unautorized = require('../errors/unauthorized');
+// const Unautorized = require('../errors/unauthorized');
 const ConflictingRequest = require('../errors/conflicting-request');
 const NotFoundError = require('../errors/not-found-err');
+const BadRequest = require('../errors/bad-request');
 // const jwtSign = require('../utils/jwt-sign');
 
 const { ERROR_CODE } = require('../utils/error-code');
@@ -22,18 +23,14 @@ const getUsers = async (req, res, next) => {
 };
 
 const getCurrentUser = async (req, res, next) => {
-  try {
-    const user = await User.findById(req.user.id);
-    if (!user) {
-      throw new NotFoundError('Нет пользователя с таким id');
-    }
-    res.send(user);
-  } catch (err) {
-    if (err.name === 'CastError') {
-      err.statusCode = ERROR_CODE;
-    }
-    next(err);
-  }
+  User.findById(req.user._id)
+    .then((user) => {
+      if (!user) {
+        throw new NotFoundError('Нет пользователя с таким id');
+      }
+      res.send(user);
+    })
+    .catch(next);
 };
 
 const getUser = async (req, res, next) => {
@@ -52,22 +49,35 @@ const getUser = async (req, res, next) => {
 };
 
 const createUser = (req, res, next) => {
-  const { email, password } = req.body;
+  const {
+    email,
+    password,
+    name,
+    about,
+    avatar,
+  } = req.body;
 
-  User.findOne({ email })
-    .then((user) => {
-      if (user) {
-        throw new ConflictingRequest('Уже есть такой email');
+  bcrypt
+    .hash(password, 10)
+    .then((hash) => User.create({
+      email,
+      password: hash,
+      name,
+      about,
+      avatar,
+    }))
+    .then((user) => res.send(user))
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        const error = new BadRequest('Не найдено');
+        next(error);
       }
-      return bcrypt.hash(password, 10);
-    })
-    .then((hash) => {
-      User.create({ email, password: hash })
-        .then(({ _id }) => {
-          res.send({ email, _id });
-        });
-    })
-    .catch(next);
+      if (err.code === 'CastError') {
+        const error = new ConflictingRequest('Нет пользователя с таким id');
+        next(error);
+      }
+      next(err);
+    });
 };
 
 const login = (req, res, next) => {
@@ -105,19 +115,24 @@ const updateUser = async (req, res, next) => {
   }
 };
 
-const updateAvatarUser = async (req, res, next) => {
-  try {
-    const avatar = await User.findByIdAndUpdate(req.user.id, {
-      avatar: req.body.avatar,
-    }, { runValidators: true, new: true });
-    res.send(avatar);
-  } catch (err) {
-    if (err.name === 'CastError' || err.name === 'ValidationError') {
-      err.statusCode = ERROR_CODE;
-    }
-    next(err);
-    console.error(err);
-  }
+const updateAvatarUser = (req, res, next) => {
+  const { avatar } = req.body;
+  const owner = req.user._id;
+
+  User.findByIdAndUpdate(owner, { avatar }, { new: true, runValidators: true })
+    .then((user) => {
+      if (!user) {
+        throw new NotFoundError('Нет пользователя с таким id');
+      }
+      res.send(user);
+    })
+    .catch((err) => {
+      if (err.name === 'CastError' || err.name === 'ValidationError') {
+        const error = new BadRequest('Не найдено');
+        next(error);
+      }
+      next(err);
+    });
 };
 
 module.exports = {
