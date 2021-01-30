@@ -11,10 +11,10 @@ export const register = (email, password) => {
     },
     body: JSON.stringify({ email, password })
   })
-    .then(response => {
-      let data = response.json();
-      if (!response.ok) {
-        return Promise.reject(response.status);
+    .then(res => {
+      let data = res.json();
+      if (!res.ok) {
+        return Promise.reject(res.status);
       }
       return data;
     })
@@ -29,10 +29,10 @@ export const authorize = (email, password) => {
     },
     body: JSON.stringify({ email, password })
   })
-    .then((response => {
-      let data = response.json();
-      if (!response.ok) {
-        return Promise.reject(response.status);
+    .then((res => {
+      let data = res.json();
+      if (!res.ok) {
+        return Promise.reject(res.status);
       }
       return data;
     }))
