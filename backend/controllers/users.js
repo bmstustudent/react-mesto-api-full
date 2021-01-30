@@ -1,14 +1,10 @@
 const bcrypt = require('bcryptjs');
 const User = require('../models/user');
-// const Unautorized = require('../errors/unauthorized');
+const Unautorized = require('../errors/unauthorized');
 const ConflictingRequest = require('../errors/conflicting-request');
 const NotFoundError = require('../errors/not-found-err');
-const BadRequest = require('../errors/bad-request');
-// const jwtSign = require('../utils/jwt-sign');
-
+const jwtSign = require('../utils/jwt-sign');
 const { ERROR_CODE } = require('../utils/error-code');
-const { NODE_ENV, JWT_SECRET } = process.env;
-const jwt = require('jsonwebtoken');
 
 const getUsers = async (req, res, next) => {
   try {
@@ -23,14 +19,18 @@ const getUsers = async (req, res, next) => {
 };
 
 const getCurrentUser = async (req, res, next) => {
-  User.findById(req.user._id)
-    .then((user) => {
-      if (!user) {
-        throw new NotFoundError('Нет пользователя с таким id');
-      }
-      res.send(user);
-    })
-    .catch(next);
+  try {
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      throw new NotFoundError('Нет пользователя с таким id');
+    }
+    res.send(user);
+  } catch (err) {
+    if (err.name === 'CastError') {
+      err.statusCode = ERROR_CODE;
+    }
+    next(err);
+  }
 };
 
 const getUser = async (req, res, next) => {
@@ -49,53 +49,40 @@ const getUser = async (req, res, next) => {
 };
 
 const createUser = (req, res, next) => {
-  const {
-    email,
-    password,
-    name,
-    about,
-    avatar,
-  } = req.body;
+  const { email, password } = req.body;
 
-  bcrypt
-    .hash(password, 10)
-    .then((hash) => User.create({
-      email,
-      password: hash,
-      name,
-      about,
-      avatar,
-    }))
-    .then((user) => res.send(user))
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        const error = new BadRequest('Не найдено');
-        next(error);
+  User.findOne({ email })
+    .then((user) => {
+      if (user) {
+        throw new ConflictingRequest('Уже есть такой email');
       }
-      if (err.code === 'CastError') {
-        const error = new ConflictingRequest('Нет пользователя с таким id');
-        next(error);
-      }
-      next(err);
-    });
+      return bcrypt.hash(password, 10);
+    })
+    .then((hash) => {
+      User.create({ email, password: hash })
+        .then(({ _id }) => {
+          res.send({ email, _id });
+        });
+    })
+    .catch(next);
 };
 
 const login = (req, res, next) => {
   const { email, password } = req.body;
 
-  return User.findUser(email, password)
+  return User.findOne({ email }).select('+password')
     .then((user) => {
-      const token = jwt.sign(
-        { _id: user._id },
-        NODE_ENV === 'production' ? JWT_SECRET : 'the-secret-key',
-        { expiresIn: '7d' },
-      );
-      res.cookie('jwt', token, {
-        maxAge: 604800000,
-        httpOnly: true,
-        sameSite: true,
-      })
-        .send(user);
+      if (!user) {
+        throw new Unautorized('Неправильные почта или пароль');
+      }
+      return bcrypt.compare(password, user.password)
+        .then((matched) => {
+          if (!matched) {
+            throw new Unautorized('Неправильные почта или пароль');
+          }
+          const token = jwtSign(user._id);
+          res.send({ token });
+        });
     })
     .catch(next);
 };
@@ -115,24 +102,18 @@ const updateUser = async (req, res, next) => {
   }
 };
 
-const updateAvatarUser = (req, res, next) => {
-  const { avatar } = req.body;
-  const owner = req.user._id;
-
-  User.findByIdAndUpdate(owner, { avatar }, { new: true, runValidators: true })
-    .then((user) => {
-      if (!user) {
-        throw new NotFoundError('Нет пользователя с таким id');
-      }
-      res.send(user);
-    })
-    .catch((err) => {
-      if (err.name === 'CastError' || err.name === 'ValidationError') {
-        const error = new BadRequest('Не найдено');
-        next(error);
-      }
-      next(err);
-    });
+const updateAvatarUser = async (req, res, next) => {
+  try {
+    const avatar = await User.findByIdAndUpdate(req.user.id, {
+      avatar: req.body.avatar,
+    }, { runValidators: true, new: true });
+    res.send(avatar);
+  } catch (err) {
+    if (err.name === 'CastError' || err.name === 'ValidationError') {
+      err.statusCode = ERROR_CODE;
+    }
+    next(err);
+  }
 };
 
 module.exports = {
