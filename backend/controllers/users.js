@@ -108,9 +108,11 @@ const updateAvatarUser = async (req, res, next) => {
       avatar: req.body.avatar,
     }, { runValidators: true, new: true });
     res.send(avatar);
+    console.log("ошибка поймана!");
   } catch (err) {
     if (err.name === 'CastError' || err.name === 'ValidationError') {
       err.statusCode = ERROR_CODE;
+      console.log("ошибка поймана!");
     }
     next(err);
   }
