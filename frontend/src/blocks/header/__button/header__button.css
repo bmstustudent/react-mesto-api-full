@@ -1,0 +1,15 @@
+.header__button {
+  font-size: 18px;
+  line-height: 1.22;
+  color: #FFFFFF;
+  background-color: transparent;
+  box-shadow: none;
+  border: none;
+}
+
+@media screen and (max-width: 425px){
+  .header__button {
+    font-size: 14px;
+    line-height: 1.21;
+  }
+}

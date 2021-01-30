@@ -1,0 +1,9 @@
+.popup__cover_type_register {
+  margin-bottom: 201px;
+}
+
+@media screen and (max-width: 425px){
+  .popup__cover_type_register {
+    margin-bottom: 162px;
+  }
+}

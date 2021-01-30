@@ -1,0 +1,15 @@
+.header__menu-wrapper {
+  display: none;
+}
+
+@media screen and (max-width: 425px) {
+  .header__menu-wrapper {
+    display: none;
+    position: relative;
+    width: 24px;
+    height: 20px;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+  }
+}

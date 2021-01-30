@@ -1,0 +1,6 @@
+.header__cover {
+  display: flex;
+  padding-top: 6px;
+  align-self: flex-start;
+  max-width: 350px;
+}

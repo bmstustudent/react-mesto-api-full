@@ -1,0 +1,9 @@
+.header_type_active {
+
+}
+
+@media screen and (max-width: 425px) {
+  .header_type_active  {
+    margin-top: 143px;
+  }
+}
