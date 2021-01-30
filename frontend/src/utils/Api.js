@@ -1,7 +1,7 @@
-import {getToken} from "./token";
+import { getToken } from "./token";
 
 class Api {
-  constructor({baseUrl, headers}) {
+  constructor({ baseUrl, headers }) {
     this.baseUrl = baseUrl;
     this.headers = headers;
   }

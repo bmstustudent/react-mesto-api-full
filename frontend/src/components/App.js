@@ -11,9 +11,9 @@ import DeleteConfirmPopup from "./DeleteConfirmPopup";
 import ImagePopup from "./ImagePopup";
 import InfoTooltip from "./InfoTooltip";
 import api from "../utils/Api";
-import {CurrentUserContext} from "../contexts/CurrentUserContext";
-import {getToken, removeToken, setToken} from "../utils/token";
-import {Redirect, Route, Switch, useHistory} from 'react-router-dom';
+import { CurrentUserContext } from "../contexts/CurrentUserContext";
+import { getToken, removeToken, setToken } from "../utils/token";
+import { Redirect, Route, Switch, useHistory } from 'react-router-dom';
 import ProtectedRoute from "./ProtectedRoute";
 import * as auth from '../auth.js';
 
@@ -232,12 +232,12 @@ const App = () => {
       <div className="page__cover">
         <Switch>
           <CurrentUserContext.Provider value={currentUser}>
-            <Header onSignOut={onSignOut} loggedIn={loggedIn} email={email}/>
+            <Header onSignOut={onSignOut} loggedIn={loggedIn} email={email} />
             <Route path="/signin">
-              <Login onLogin={onLogin} isLoading={isLoading}/>
+              <Login onLogin={onLogin} isLoading={isLoading} />
             </Route>
             <Route path="/signup">
-              <Register onRegister={onRegister} isLoading={isLoading}/>
+              <Register onRegister={onRegister} isLoading={isLoading} />
             </Route>
             <ProtectedRoute exact path="/" loggedIn="loggedIn">
               <Main
@@ -249,28 +249,28 @@ const App = () => {
                 onCardDelete={handleDeletePopupOpenClick}
                 cards={cards}
               />
-              <Footer/>
+              <Footer />
               <EditProfilePopup isOpen={isEditProfilePopupOpen} onClose={closeAllPopups}
-                                onUpdateUser={handleUpdateUser} isLoading={isLoading}/>
+                onUpdateUser={handleUpdateUser} isLoading={isLoading} />
 
               <AddPlacePopup isOpen={isAddPlacePopupOpen} onClose={closeAllPopups}
-                             onAddPlace={handleAddPlaceSubmit} isLoading={isLoading}/>
+                onAddPlace={handleAddPlaceSubmit} isLoading={isLoading} />
 
               <EditAvatarPopup isOpen={isEditAvatarPopupOpen} onClose={closeAllPopups}
-                               onUpdateAvatar={handleUpdateAvatar} isLoading={isLoading}/>
+                onUpdateAvatar={handleUpdateAvatar} isLoading={isLoading} />
 
               <DeleteConfirmPopup isOpen={isDeletePopupOpen} onClose={closeAllPopups}
-                                  card={selectedCard} onCardDelete={handleCardDelete} isLoading={isLoading}/>
+                card={selectedCard} onCardDelete={handleCardDelete} isLoading={isLoading} />
 
-              <ImagePopup isOpen={isImagePopupOpen} onClose={closeAllPopups} card={selectedCard}/>
+              <ImagePopup isOpen={isImagePopupOpen} onClose={closeAllPopups} card={selectedCard} />
 
             </ProtectedRoute>
             <Route>
-              {loggedIn ? <Redirect to="/"/> : <Redirect to="/signin"/>}
+              {loggedIn ? <Redirect to="/" /> : <Redirect to="/signin" />}
             </Route>
           </CurrentUserContext.Provider>
         </Switch>
-        <InfoTooltip isRegister={isRegister} isOpen={isTooltipPopupOpen} onClose={closeAllPopups}/>
+        <InfoTooltip isRegister={isRegister} isOpen={isTooltipPopupOpen} onClose={closeAllPopups} />
       </div>
     </div>
 

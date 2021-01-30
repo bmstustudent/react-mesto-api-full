@@ -1,4 +1,4 @@
-import {setToken} from "./utils/token";
+import { setToken } from "./utils/token";
 
 export const BASE_URL = 'https://api.mestobm.students.nomoreparties.xyz';
 
@@ -9,11 +9,11 @@ export const register = (email, password) => {
       'Accept': 'application/json',
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({email, password})
+    body: JSON.stringify({ email, password })
   })
     .then(response => {
       let data = response.json();
-      if(!response.ok) {
+      if (!response.ok) {
         return Promise.reject(response.status);
       }
       return data;
@@ -27,7 +27,7 @@ export const authorize = (email, password) => {
       'Accept': 'application/json',
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify({email, password})
+    body: JSON.stringify({ email, password })
   })
     .then((response => {
       let data = response.json();
@@ -37,7 +37,7 @@ export const authorize = (email, password) => {
       return data;
     }))
     .then((data) => {
-      if (data.token){
+      if (data.token) {
         setToken(data.token);
         return data;
       }
