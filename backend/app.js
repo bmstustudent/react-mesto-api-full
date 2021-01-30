@@ -15,7 +15,7 @@ const PORT = 3000;
 
 app.use(cors());
 
-const mongoDbUrl = 'mongodb://127.0.0.1:27017/mestodb';
+const mongoDbUrl = 'mongodb://127.0.0.1:27017';
 const mongooseConnectOptions = {
   useNewUrlParser: true,
   useUnifiedTopology: true,

@@ -1,8 +1,8 @@
 import React from "react";
 import logo from '../images/logo.svg';
-import {useHistory, useLocation} from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 
-const Header = ({onSignOut, loggedIn, email}) => {
+const Header = ({ onSignOut, loggedIn, email }) => {
   const location = useLocation();
   const history = useHistory();
   const [open, setOpen] = React.useState(false);
@@ -43,8 +43,8 @@ const Header = ({onSignOut, loggedIn, email}) => {
 
   return (
     <header className={`${loggedIn && open ? `header page__header header_type_active` : `header page__header`}`}>
-      <a className="logo header__logo opacity" href="../../public/index.html">
-        <img className="logo__image" src={logo} alt="Логотип сайта Место"/>
+      <a className="logo header__logo opacity" href="../../build/index.html">
+        <img className="logo__image" src={logo} alt="Логотип сайта Место" />
       </a>
       <div className={handleClassName()}>
         <span
@@ -54,7 +54,7 @@ const Header = ({onSignOut, loggedIn, email}) => {
           onClick={handleButtonClick}>{handleLinkName()}</button>
       </div>
       <div onClick={handleMenuClick} className={`${loggedIn ? `header__menu-wrapper header__menu-wrapper_type_active` : `header__menu-wrapper`}`}>
-        <div className={open ? `header__menu header__menu_type_active` : `header__menu`}/>
+        <div className={open ? `header__menu header__menu_type_active` : `header__menu`} />
       </div>
     </header>
   );
