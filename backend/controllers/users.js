@@ -69,8 +69,7 @@ const createUser = (req, res, next) => {
 
 const login = (req, res, next) => {
   const { email, password } = req.body;
-
-  return User.findOne({ email }).select('+password')
+  return User.findUser(email, password)
     .then((user) => {
       if (!user) {
         throw new Unautorized('Неправильные почта или пароль');
