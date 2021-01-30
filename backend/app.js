@@ -11,9 +11,12 @@ const { requestLogger, errorLogger } = require('./middlewares/logger');
 require('dotenv').config();
 
 const app = express();
-const PORT = 3000;
+const { PORT = 3000 } = process.env;
 
-app.use(cors());
+app.use('*', cors({
+  origin: 'https://mestobm.students.nomoreparties.xyz',
+  credentials: true,
+}));
 
 const mongoDbUrl = 'mongodb://127.0.0.1:27017';
 const mongooseConnectOptions = {
@@ -49,18 +52,19 @@ app.use('/users', auth, usersRoutes);
 app.use('/cards', auth, cardsRoutes);
 
 app.use(errorLogger);
-
 app.use(errors());
 
-app.use((err, req, res, next) => {
+// eslint-disable-next-line no-unused-vars
+app.use((err, _req, res, _next) => {
   const { statusCode = 500, message } = err;
-
-  res.status(statusCode).send({
-    message: statusCode === 500 ? 'На сервере произошла ошибка' : message,
-  });
-  next();
+  res
+    .status(statusCode)
+    .send({
+      message: statusCode === 500 ? 'Внутренняя ошибка сервера' : message,
+    });
 });
 
 app.listen(PORT, () => {
-  console.log(`App listening on port ${PORT}`);
+  // eslint-disable-next-line no-unused-vars
+  console.log(`Сервер запущен на порту: ${PORT}`);
 });
