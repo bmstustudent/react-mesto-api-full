@@ -11,7 +11,7 @@
     "type": "git",
     "url": "git+https://github.com/bmstustudent/express-mesto.git"
   },
-  "author": "Shults Pavel",
+  "author": "Pavel Shults",
   "license": "ISC",
   "homepage": ".",
   "devDependencies": {

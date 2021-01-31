@@ -9,7 +9,7 @@ export const checkStatus = (res) => {
 };
 
 export const register = (email, password) => {
-    return fetch(`${BASE_URL}/signup`, {
+  return fetch(`${BASE_URL}/signup`, {
     method: 'POST',
     headers: {
       Accept: 'application/json',
@@ -17,19 +17,19 @@ export const register = (email, password) => {
     },
     body: JSON.stringify({ email, password }),
   })
-  .then((res) => checkStatus(res));
+    .then((res) => checkStatus(res));
 }
 
 export const authorize = (email, password) => {
   return fetch(`${BASE_URL}/signin`, {
-  method: 'POST',
-  headers: {
-    Accept: 'application/json',
-    'Content-Type': 'application/json',
-  },
-  body: JSON.stringify({ email, password }),
-})
-.then((res) => checkStatus(res));
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ email, password }),
+  })
+    .then((res) => checkStatus(res));
 }
 
 export const checkToken = (token) => {

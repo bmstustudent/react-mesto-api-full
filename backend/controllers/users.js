@@ -93,7 +93,7 @@ const updateUserAvatar = (req, res, next) => {
     });
 };
 
-const login = (req, res, next) => {
+const loginUser = (req, res, next) => {
   const { email, password } = req.body;
   User.findUserByCredentials(email, password)
     .then((user) => {
@@ -113,7 +113,7 @@ module.exports = {
   getUser,
   createUser,
   getUserMe,
-  login,
+  loginUser,
   updateUserInfo,
   updateUserAvatar,
 };
