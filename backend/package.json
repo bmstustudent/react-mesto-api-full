@@ -1,5 +1,5 @@
 {
-  "name": "yandex-mesto",
+  "name": "mesto-react",
   "version": "1.0.0",
   "description": "Yandex Mesto project",
   "main": "index.js",
@@ -10,7 +10,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/cat-street/react-mesto-api-full.git"
+    "url": "git+https://github.com/bmstustudent/react-mesto-api-full.git"
   },
   "keywords": [
     "javascript",
@@ -20,10 +20,10 @@
     "mongodb",
     "react"
   ],
-  "author": "Andrey Kudryavtsev <catlogic@ya.ru>",
+  "author": "Shults Pavel",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/cat-street/react-mesto-api-full/issues"
+    "url": "https://github.com/bmstustudent/react-mesto-api-full"
   },
   "homepage": "/",
   "devDependencies": {
