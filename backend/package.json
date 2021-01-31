@@ -1,7 +1,7 @@
 {
-  "name": "mesto-react",
+  "name": "mesto-express",
   "version": "1.0.0",
-  "description": "Yandex Mesto project",
+  "description": "Mesto Russia project",
   "main": "index.js",
   "scripts": {
     "start": "node app.js",
@@ -23,7 +23,7 @@
   "author": "Shults Pavel",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/bmstustudent/react-mesto-api-full"
+    "url": "https://github.com/bmstustudent/react-mesto-api-full.git"
   },
   "homepage": "/",
   "devDependencies": {
