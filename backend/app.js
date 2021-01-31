@@ -39,14 +39,18 @@ app.get('/crash-test', () => {
 
 app.post('/signin', celebrate({
   body: Joi.object().keys({
-    email: Joi.string().required().email(),
-    password: Joi.string().required().min(8),
+    email: Joi.string().trim().email().required(),
+    password: Joi.string().trim().required(),
   }),
 }), login);
 app.post('/signup', celebrate({
   body: Joi.object().keys({
-    email: Joi.string().required().email(),
-    password: Joi.string().required().min(8),
+    email: Joi.string().trim().email().required()
+      .max(30),
+    password: Joi.string().trim().required(),
+    name: Joi.string().trim().min(2).max(30),
+    about: Joi.string().trim().min(2).max(30),
+    avatar: Joi.string().trim().uri(),
   }),
 }), createUser);
 
@@ -80,7 +84,6 @@ app.use((err, req, res, next) => {
         : message,
     });
 });
-
 
 app.listen(PORT, () => {
   // eslint-disable-next-line no-console
