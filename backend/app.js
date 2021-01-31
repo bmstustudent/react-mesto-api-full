@@ -3,7 +3,6 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const { celebrate, Joi, errors } = require('celebrate');
-const router = require('express').Router();
 const usersRoutes = require('./routes/users.js');
 const cardsRoutes = require('./routes/cards.js');
 const { login, createUser } = require('./controllers/users');
@@ -35,13 +34,13 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(requestLogger); // подключаем логгер запросов
 
 // за ним идут все обработчики роутов
-router.post('/signin', celebrate({
+app.post('/signin', celebrate({
   body: Joi.object().keys({
     email: Joi.string().required().email(),
     password: Joi.string().required().min(8),
   }),
 }), login);
-router.post('/signup', celebrate({
+app.post('/signup', celebrate({
   body: Joi.object().keys({
     email: Joi.string().required().email(),
     password: Joi.string().required().min(8),
@@ -51,8 +50,10 @@ router.post('/signup', celebrate({
   }),
 }), createUser);
 
-router.use('/users', auth, usersRoutes);
-router.use('/cards', auth, cardsRoutes);
+app.use(auth);
+
+app.use('/users', auth, usersRoutes);
+app.use('/cards', auth, cardsRoutes);
 
 app.use(errorLogger); // подключаем логгер ошибок
 
