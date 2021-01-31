@@ -2,6 +2,14 @@ import { setToken } from "./utils/token";
 
 export const BASE_URL = 'https://api.mestobm.students.nomoreparties.xyz';
 
+const checkStatus = (res) => {
+  if (res.ok) {
+    return res.json();
+  }
+  return Promise.reject(`Что-то пошло не так: ${res.status}`);
+};
+
+
 export const register = (email, password) => {
   return fetch(`${BASE_URL}/signup`, {
     method: 'POST',
@@ -11,14 +19,8 @@ export const register = (email, password) => {
     },
     body: JSON.stringify({ email, password })
   })
-    .then(res => {
-      let data = res.json();
-      if (!res.ok) {
-        return Promise.reject(res.status);
-      }
-      return data;
-    })
-};
+  .then((res) => checkStatus(res));
+}
 
 export const authorize = (email, password) => {
   return fetch(`${BASE_URL}/signin`, {
@@ -29,20 +31,8 @@ export const authorize = (email, password) => {
     },
     body: JSON.stringify({ email, password })
   })
-    .then((res => {
-      let data = res.json();
-      if (!res.ok) {
-        return Promise.reject(res.status);
-      }
-      return data;
-    }))
-    .then((data) => {
-      if (data.token) {
-        setToken(data.token);
-        return data;
-      }
-    })
-};
+  .then((res) => checkStatus(res));
+}
 
 export const getContent = (token) => {
   return fetch(`${BASE_URL}/users/me`, {
@@ -53,12 +43,6 @@ export const getContent = (token) => {
       'Authorization': `Bearer ${token}`,
     }
   })
-    .then((res => {
-      let data = res.json();
-      if (!res.ok) {
-        return Promise.reject(res.status);
-      }
-      return data;
-    }))
-};
+  .then((res) => checkStatus(res));
+}
 
