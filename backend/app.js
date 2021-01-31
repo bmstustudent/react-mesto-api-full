@@ -1,91 +1,57 @@
-const express = require('express');
-const cors = require('cors');
-const mongoose = require('mongoose');
-const bodyParser = require('body-parser');
-const { celebrate, Joi, errors } = require('celebrate');
-const usersRoutes = require('./routes/users.js');
-const cardsRoutes = require('./routes/cards.js');
-const { login, createUser } = require('./controllers/users');
-const auth = require('./middlewares/auth');
-const { requestLogger, errorLogger } = require('./middlewares/logger');
-const NotFoundError = require('./errors/not-found-err');
 require('dotenv').config();
+const express = require('express');
+const mongoose = require('mongoose');
+const cors = require('cors');
+const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
+
+const { errors } = require('celebrate');
+const { requestLogger, errorLogger } = require('./middlewares/logger');
+const NotFoundError = require('./errors/not-found');
+const { requestErrors } = require('./utils/error-messages');
+
+const routes = require('./routes');
 
 const app = express();
-const PORT = 3000;
+const { PORT = 3000 } = process.env;
 
-app.use(cors());
-
-const mongoDbUrl = 'mongodb://127.0.0.1:27017/mestodb';
-const mongooseConnectOptions = {
+mongoose.connect('mongodb://127.0.0.1:27017/mesto', {
   useNewUrlParser: true,
-  useUnifiedTopology: true,
-  useFindAndModify: false,
   useCreateIndex: true,
-};
-
-mongoose.connect(mongoDbUrl, mongooseConnectOptions);
-
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-
-app.use(requestLogger);
-
-app.get('/crash-test', () => {
-  setTimeout(() => {
-    throw new Error('Сервер сейчас упадёт');
-  }, 0);
+  useFindAndModify: false,
+  useUnifiedTopology: true,
 });
 
-app.post('/signin', celebrate({
-  body: Joi.object().keys({
-    email: Joi.string().trim().email().required(),
-    password: Joi.string().trim().required(),
-  }),
-}), login);
-app.post('/signup', celebrate({
-  body: Joi.object().keys({
-    email: Joi.string().trim().email().required()
-      .max(30),
-    password: Joi.string().trim().required(),
-    name: Joi.string().trim().min(2).max(30),
-    about: Joi.string().trim().min(2).max(30),
-    avatar: Joi.string().trim().uri(),
-  }),
-}), createUser);
+app.use('*', cors({
+  origin: 'https://mesto.catlogic.ru',
+  credentials: true,
+}));
 
-app.use(auth);
+app.use(cookieParser());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(requestLogger);
 
-app.use('/users', auth, usersRoutes);
-app.use('/cards', auth, cardsRoutes);
+app.use(routes);
 
 app.all('/*', () => {
-  // eslint-disable-next-line no-undef
   throw new NotFoundError(requestErrors.notFound.URL_MESSAGE);
 });
 
 app.use(errorLogger);
-
 app.use(errors());
 
 // eslint-disable-next-line no-unused-vars
-app.use((err, req, res, next) => {
-  // eslint-disable-next-line no-console
-  console.log(err.statusCode);
-  // если у ошибки нет статуса, выставляем 500
+app.use((err, _req, res, _next) => {
   const { statusCode = 500, message } = err;
-
   res
     .status(statusCode)
     .send({
-      // проверяем статус и выставляем сообщение в зависимости от него
-      message: statusCode === 500
-        ? 'На сервере произошла ошибка'
-        : message,
+      message: statusCode === 500 ? 'Внутренняя ошибка сервера' : message,
     });
 });
 
 app.listen(PORT, () => {
   // eslint-disable-next-line no-console
-  console.log(`App listening on port ${PORT}`);
+  console.log(`Сервер запущен на порту: ${PORT}`);
 });
