@@ -1,7 +1,7 @@
 const Card = require('../models/card');
-const NotFoundError = require('../errors/not-found-error');
-const BadRequestError = require('../errors/bad-request-error');
-const ForbiddenError = require('../errors/forbidden-error');
+const Forbidden = require('../errors/forbidden');
+const NotFoundError = require('../errors/not-found-err');
+const BadRequest = require('../errors/bad-request');
 
 const getCards = (req, res, next) => {
   Card.find({})
@@ -20,7 +20,7 @@ const createCard = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new BadRequestError('Переданы некорректные данные'));
+        next(new BadRequest('Переданы некорректные данные'));
       }
       next(err);
     });
@@ -33,7 +33,7 @@ const deleteCard = (req, res, next) => {
       if (!card) {
         throw new NotFoundError('Запрашиваемый ресурс не найден');
       } else if (card.owner.toString() !== owner) {
-        throw new ForbiddenError('Вы не можите удалить не свою карточку');
+        throw new Forbidden('Вы не можите удалить не свою карточку');
       }
       Card.findByIdAndRemove(req.params.id)
         .then((removedCard) => res.status(200).send(removedCard));
@@ -56,7 +56,7 @@ const likeCard = (req, res, next) => {
     .catch((err) => next(err));
 };
 
-const dislikeCard = (req, res, next) => {
+const disLikeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.id,
     { $pull: { likes: req.user._id } },
@@ -72,9 +72,5 @@ const dislikeCard = (req, res, next) => {
 };
 
 module.exports = {
-  getCards,
-  createCard,
-  deleteCard,
-  likeCard,
-  dislikeCard,
+  getCards, createCard, deleteCard, likeCard, disLikeCard,
 };
