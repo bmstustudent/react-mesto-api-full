@@ -1,4 +1,4 @@
-import { BASE_URL } from './utils'
+export const BASE_URL = 'https://api.mestobm.students.nomoreparties.xyz';
 
 const getResponseData = (res) => {
   return res.json().then((json) => {
