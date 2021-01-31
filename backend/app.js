@@ -64,14 +64,23 @@ app.use(errorLogger);
 
 app.use(errors());
 
+// eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {
+  // eslint-disable-next-line no-console
+  console.log(err.statusCode);
+  // если у ошибки нет статуса, выставляем 500
   const { statusCode = 500, message } = err;
 
-  res.status(statusCode).send({
-    message: statusCode === 500 ? 'ай донт ноу ватс хаппенд' : message,
-  });
-  next();
+  res
+    .status(statusCode)
+    .send({
+      // проверяем статус и выставляем сообщение в зависимости от него
+      message: statusCode === 500
+        ? 'На сервере произошла ошибка'
+        : message,
+    });
 });
+
 
 app.listen(PORT, () => {
   // eslint-disable-next-line no-console
