@@ -116,33 +116,27 @@ module.exports.updateAvatar = (req, res, next) => {
 
 module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
-
-  return User.findUser(email, password)
+  User.findUserByCredentials(email, password)
     .then((user) => {
-      const token = jwt.sign(
-        { _id: user._id },
-        NODE_ENV === 'production' ? JWT_SECRET : 'the-secret-key',
-        { expiresIn: '7d' },
-      );
-      res.send('jwt', token, {
-        maxAge: 604800000,
+      const token = jwt.sign({ _id: user._id }, NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret', { expiresIn: '7d' });
+      res.status(200).send({ token, name: user.name, email: user.email });
+    })
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        next(new BadRequestError('Переданы некорректные данные'));
+      }
+      next(err);
+    });
+
+  module.exports.logout = (_req, res, next) => {
+    try {
+      res.cookie('jwt', '', {
+        maxAge: -1,
         httpOnly: true,
         sameSite: true,
       })
-        .send(user);
-    })
-    .catch(next);
-};
-
-module.exports.logout = (_req, res, next) => {
-  try {
-    res.dend('jwt', '', {
-      maxAge: -1,
-      httpOnly: true,
-      sameSite: true,
-    })
-      .send({ message: 'Logged out' });
-  } catch (err) {
-    next(err);
-  }
-};
+        .send({ message: 'Logged out' });
+    } catch (err) {
+      next(err);
+    }
+  };
