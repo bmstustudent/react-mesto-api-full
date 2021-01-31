@@ -3,6 +3,7 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const { celebrate, Joi, errors } = require('celebrate');
+const router = require('express').Router();
 const usersRoutes = require('./routes/users.js');
 const cardsRoutes = require('./routes/cards.js');
 const { login, createUser } = require('./controllers/users');
@@ -34,13 +35,13 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(requestLogger); // подключаем логгер запросов
 
 // за ним идут все обработчики роутов
-app.post('/signin', celebrate({
+router.post('/signin', celebrate({
   body: Joi.object().keys({
     email: Joi.string().required().email(),
     password: Joi.string().required().min(8),
   }),
 }), login);
-app.post('/signup', celebrate({
+router.post('/signup', celebrate({
   body: Joi.object().keys({
     email: Joi.string().required().email(),
     password: Joi.string().required().min(8),
@@ -50,10 +51,8 @@ app.post('/signup', celebrate({
   }),
 }), createUser);
 
-app.use(auth);
-
-app.use('/users', auth, usersRoutes);
-app.use('/cards', auth, cardsRoutes);
+router.use('/users', auth, usersRoutes);
+router.use('/cards', auth, cardsRoutes);
 
 app.use(errorLogger); // подключаем логгер ошибок
 
@@ -70,7 +69,7 @@ app.use((err, req, res, next) => {
     .send({
       // проверяем статус и выставляем сообщение в зависимости от него
       message: statusCode === 500
-        ? 'На сервере произошла ошибка'
+        ? 'ай донт ноу вотс хапенд'
         : message,
     });
 });
