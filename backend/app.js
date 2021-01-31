@@ -31,8 +31,9 @@ mongoose.connect(mongoDbUrl, mongooseConnectOptions);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.use(requestLogger);
+app.use(requestLogger); // подключаем логгер запросов
 
+// за ним идут все обработчики роутов
 app.post('/signin', celebrate({
   body: Joi.object().keys({
     email: Joi.string().required().email(),
@@ -49,22 +50,29 @@ app.post('/signup', celebrate({
 app.use(auth);
 
 app.use('/users', auth, usersRoutes);
-app.use('/cards', auth, cardsRoutes);
+app.post('/cards', auth, cardsRoutes);
 
-app.use(errorLogger);
-app.use(errors());
+app.use(errorLogger); // подключаем логгер ошибок
 
+app.use(errors()); // обработчик ошибок celebrate
+
+// наш централизованный обработчик
 // eslint-disable-next-line no-unused-vars
-app.use((err, _req, res, _next) => {
+app.use((err, req, res, next) => {
+  // если у ошибки нет статуса, выставляем 500
   const { statusCode = 500, message } = err;
+
   res
     .status(statusCode)
     .send({
-      message: statusCode === 500 ? 'Внутренняя ошибка сервера' : message,
+      // проверяем статус и выставляем сообщение в зависимости от него
+      message: statusCode === 500
+        ? 'На сервере произошла ошибка'
+        : message,
     });
 });
 
 app.listen(PORT, () => {
-  // eslint-disable-next-line no-unused-vars
+  // eslint-disable-next-line no-console
   console.log(`Сервер запущен на порту: ${PORT}`);
 });
