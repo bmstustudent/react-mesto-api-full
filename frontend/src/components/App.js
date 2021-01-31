@@ -100,7 +100,6 @@ const App = () => {
 
   const onSignOut = () => {
     removeToken();
-    setEmail('');
     setLoggedIn(false);
     history.push('/signin');
   }
@@ -200,12 +199,14 @@ const App = () => {
   const handleUpdateAvatar = (inputValue) => {
     setIsLoading(true)
     api.setAvatar(inputValue)
-      .then((avatar) => {
-        setCurrentUser(avatar);
-        closeAllPopups();
+      .then((res) => {
+        setCurrentUser(res);
+      })
+      .then(() => {
+        closeAllPopups()
       })
       .catch((err) => {
-        console.log(`${err}`);
+        console.log(`аватар поменялся: ${err}`);
       })
       .finally(() => {
         setIsLoading(false);
@@ -217,10 +218,12 @@ const App = () => {
     api.createCard(inputValue)
       .then((newCard) => {
         setCards([...cards, newCard]);
-        closeAllPopups();
+      })
+      .then(() => {
+        closeAllPopups()
       })
       .catch((err) => {
-        console.log(`${err}`);
+        console.log(`Карта добавлена: ${err}`);
       })
       .finally(() => {
         setIsLoading(false);
@@ -230,16 +233,17 @@ const App = () => {
   return (
     <div className="page">
       <div className="page__cover">
-        <Switch>
-          <CurrentUserContext.Provider value={currentUser}>
-            <Header onSignOut={onSignOut} loggedIn={loggedIn} email={email} />
+
+        <CurrentUserContext.Provider value={currentUser}>
+          <Header onSignOut={onSignOut} loggedIn={loggedIn} email={email} />
+          <Switch>
             <Route path="/signin">
               <Login onLogin={onLogin} isLoading={isLoading} />
             </Route>
             <Route path="/signup">
               <Register onRegister={onRegister} isLoading={isLoading} />
             </Route>
-            <ProtectedRoute exact path="/" loggedIn="loggedIn">
+            <ProtectedRoute exact path="/" loggedIn={loggedIn}>
               <Main
                 onEditAvatar={handleEditAvatarClick}
                 onEditProfile={handleEditProfileClick}
@@ -249,27 +253,26 @@ const App = () => {
                 onCardDelete={handleDeletePopupOpenClick}
                 cards={cards}
               />
-              <Footer />
-              <EditProfilePopup isOpen={isEditProfilePopupOpen} onClose={closeAllPopups}
-                onUpdateUser={handleUpdateUser} isLoading={isLoading} />
-
-              <AddPlacePopup isOpen={isAddPlacePopupOpen} onClose={closeAllPopups}
-                onAddPlace={handleAddPlaceSubmit} isLoading={isLoading} />
-
-              <EditAvatarPopup isOpen={isEditAvatarPopupOpen} onClose={closeAllPopups}
-                onUpdateAvatar={handleUpdateAvatar} isLoading={isLoading} />
-
-              <DeleteConfirmPopup isOpen={isDeletePopupOpen} onClose={closeAllPopups}
-                card={selectedCard} onCardDelete={handleCardDelete} isLoading={isLoading} />
-
-              <ImagePopup isOpen={isImagePopupOpen} onClose={closeAllPopups} card={selectedCard} />
-
             </ProtectedRoute>
-            <Route>
-              {loggedIn ? <Redirect to="/" /> : <Redirect to="/signin" />}
-            </Route>
-          </CurrentUserContext.Provider>
-        </Switch>
+          </Switch>
+          <Footer />
+          <EditProfilePopup isOpen={isEditProfilePopupOpen} onClose={closeAllPopups}
+            onUpdateUser={handleUpdateUser} isLoading={isLoading} />
+
+          <AddPlacePopup isOpen={isAddPlacePopupOpen} onClose={closeAllPopups}
+            onAddPlace={handleAddPlaceSubmit} isLoading={isLoading} />
+
+          <EditAvatarPopup isOpen={isEditAvatarPopupOpen} onClose={closeAllPopups}
+            onUpdateAvatar={handleUpdateAvatar} isLoading={isLoading} />
+
+          <DeleteConfirmPopup isOpen={isDeletePopupOpen} onClose={closeAllPopups}
+            card={selectedCard} onCardDelete={handleCardDelete} isLoading={isLoading} />
+
+          <ImagePopup isOpen={isImagePopupOpen} onClose={closeAllPopups} card={selectedCard} />
+          <Route>
+            {loggedIn ? <Redirect to="/" /> : <Redirect to="/signin" />}
+          </Route>
+        </CurrentUserContext.Provider>
         <InfoTooltip isRegister={isRegister} isOpen={isTooltipPopupOpen} onClose={closeAllPopups} />
       </div>
     </div>
