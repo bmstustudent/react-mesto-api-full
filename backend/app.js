@@ -51,7 +51,12 @@ app.use(() => {
 // здесь обрабатываем все ошибки
 // eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {
-  res.status(err.status || 500).send({ message: err.message || 'ошибка сервера' });
+  const { status = 500, message } = err;
+
+  res.status(status).send({
+    message: status === 500 ? 'На сервере произошла ошибка' : message,
+  });
+  next();
 });
 
 app.listen(PORT, () => {
