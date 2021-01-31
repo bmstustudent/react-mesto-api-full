@@ -1,37 +1,69 @@
 const mongoose = require('mongoose');
-const isEmail = require('validator/lib/isEmail');
-const isURL = require('validator/lib/isURL');
+const bcrypt = require('bcryptjs');
+const UnauthorizedError = require('../errors/unauthorized');
+const { emailValidator, urlValidator } = require('../utils/validator');
+const { defaultValues } = require('../utils/constants');
+const { validationErrors, authErrors } = require('../utils/error-messages');
 
 const userSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    minlength: 2,
-    maxlength: 30,
-    default: 'Жак-Ив Кусто',
-  },
-  about: {
-    type: String,
-    minlength: 2,
-    maxlength: 30,
-    default: 'Исследователь',
-  },
-  avatar: {
-    type: String,
-    validate: isURL,
-    default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
-  },
   email: {
     type: String,
-    required: true,
+    required: [true, validationErrors.email.REQUIRED],
+    maxlength: [30, validationErrors.email.LONG],
     unique: true,
-    validate: isEmail,
+    validate: {
+      validator: emailValidator,
+      message: validationErrors.email.INVALID,
+    },
   },
   password: {
     type: String,
-    required: true,
-    minlength: 8,
-    select: false,
+    required: [true, validationErrors.password.REQUIRED],
+  },
+  name: {
+    type: String,
+    minlength: [2, validationErrors.name.SHORT],
+    maxlength: [30, validationErrors.name.LONG],
+    default: defaultValues.NAME,
+  },
+  about: {
+    type: String,
+    minlength: [2, validationErrors.about.SHORT],
+    maxlength: [30, validationErrors.about.LONG],
+    default: defaultValues.ABOUT,
+  },
+  avatar: {
+    type: String,
+    default: defaultValues.AVATAR,
+    validate: {
+      validator: urlValidator,
+      message: validationErrors.url.INVALID,
+    },
   },
 });
+
+/**
+ * @static @method findUser
+ * @description валидировать пользователя по базе
+ * @param {string} email
+ * @param {string} password
+ */
+userSchema.statics.findUser = async function findUser(email, password) {
+  const user = await this.findOne({ email });
+  if (!user) throw new UnauthorizedError(authErrors.unauthorized.LOGIN_MESSAGE);
+  const match = await bcrypt.compare(password, user.password);
+  if (!match) throw new UnauthorizedError(authErrors.unauthorized.LOGIN_MESSAGE);
+  return user;
+};
+
+/**
+ * @method toJSON
+ * @description удалить пароль из объекта ответа
+ */
+userSchema.methods.toJSON = function toJSON() {
+  const obj = this.toObject();
+  delete obj.password;
+  return obj;
+};
 
 module.exports = mongoose.model('user', userSchema);
