@@ -1,26 +1,29 @@
 const router = require('express').Router();
 const { celebrate, Joi } = require('celebrate');
 const {
-  getUsers, getUser, updateUser, updateAvatarUser, getCurrentUser,
-} = require('../controllers/users.js');
+  getUsers, getUser, getUserMe, updateUserInfo, updateUserAvatar,
+} = require('../controllers/users');
 
-router.get('/', getUsers);
-router.get('/me', getCurrentUser);
-router.get('/:id', celebrate({
+router.get('/users', getUsers);
+router.get('/users/me', getUserMe);
+
+router.get('/users/:id', celebrate({
   params: Joi.object().keys({
-    id: Joi.string().alphanum().length(24).id(),
+    id: Joi.string().hex().length(24),
   }),
 }), getUser);
-router.patch('/me', celebrate({
+
+router.patch('/users/me', celebrate({
   body: Joi.object().keys({
-    name: Joi.string().min(2).max(30).default('Жак-Ив Кусто'),
-    about: Joi.string().min(2).max(30).default('Исследователь'),
+    name: Joi.string().required().min(2).max(30),
+    about: Joi.string().required().min(2).max(30),
   }),
-}), updateUser);
-router.patch('/me/avatar', celebrate({
+}), updateUserInfo);
+
+router.patch('/users/me/avatar', celebrate({
   body: Joi.object().keys({
-    avatar: Joi.string().trim().uri().default('https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png'),
+    avatar: Joi.string().required().pattern(/^(http|https):\/\/[^ "]+$/),
   }),
-}), updateAvatarUser);
+}), updateUserAvatar);
 
 module.exports = router;

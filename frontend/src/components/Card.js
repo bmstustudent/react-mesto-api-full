@@ -1,40 +1,55 @@
-import React from "react";
-import { CurrentUserContext } from "../contexts/CurrentUserContext";
+import React from 'react';
+import { CurrentUserContext } from '../contexts/CurrentUserContext';
 
-const Card = ({ card, onCardClick, onCardLike, onCardDelete }) => {
+function Card(props) {
+    const { card } = props;
     const currentUser = React.useContext(CurrentUserContext);
     const isOwn = card.owner === currentUser._id;
-    const isLiked = card.likes.some(i => i === currentUser._id);
+    const isLiked = card.likes.some(like => like === currentUser._id);
+    const cardDeleteButtonClassName = (
+        `button__delete button opacity ${isOwn ? 'button_visible' : ''}`
+    );
+    const cardLikeButtonClassName = (
+        `button__like button opacity ${isLiked ? 'button__like_active' : ''}`
+    );
 
-    const handleLikeClick = () => {
-        onCardLike(card);
+    function handleClick() {
+        props.onCardClick(card);
     }
-
-    const handleDeleteClick = () => {
-        onCardDelete(card);
+    function handleLikeClick() {
+        props.onCardLike(card)
     }
-
-    const handleClick = () => {
-        onCardClick(card);
+    function handleDeleteClick() {
+        props.onCardDelete(card)
     }
 
     return (
-        <li className="pictures__item">
+        <li className="card">
+            <img
+                className="card__image"
+                src={card.link} alt={card.name}
+                onClick={handleClick}
+            />
             <button
-                className={`${isOwn ? `button pictures__delete pictures__delete_show opacity` : `button pictures__delete opacity`}`}
-                type="button" onClick={handleDeleteClick} />
-            <img className="pictures__image" src={card.link} alt={card.name} onClick={handleClick} />
-            <div className="pictures__cover">
-                <p className="pictures__title">{card.name}</p>
-                <div className="pictures__like-cover">
+                type="button"
+                aria-label="удалить элемент"
+                className={cardDeleteButtonClassName}
+                onClick={handleDeleteClick}>
+            </button>
+            <div className="card__info">
+                <h3 className="card__title" >{card.name}</h3>
+                <div className="card__like">
                     <button
-                        className={`${isLiked ? `button pictures__like pictures__like_active opacity` : `button pictures__like opacity`}`}
-                        type="button" onClick={handleLikeClick} />
-                    <span className="pictures__like-counter">{card.likes.length}</span>
+                        type="button"
+                        aria-label="выразить положительную реакцию"
+                        className={cardLikeButtonClassName}
+                        onClick={handleLikeClick}>
+                    </button>
+                    <div className="card__like-counter">{card.likes.length}</div>
                 </div>
             </div>
         </li>
-    );
+    )
 }
 
 export default Card;

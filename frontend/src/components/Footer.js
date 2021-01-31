@@ -1,9 +1,9 @@
-import React from "react";
+import React from 'react';
 
-const Footer = () => {
+function Footer() {
     return (
-        <footer className="footer page__footer">
-            <p className="footer__copyright">&copy; 2021 Mesto Russia</p>
+        <footer className="footer">
+            <p className="footer__copyright">&copy; 2020 Mesto Russia</p>
         </footer>
     );
 }

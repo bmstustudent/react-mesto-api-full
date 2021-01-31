@@ -1,18 +1,13 @@
-@import url('./__cover/page__cover.css');
-@import url('./__header/page__header.css');
-@import url('./__content/page__content.css');
-@import url('./__footer/page__footer.css');
-
 .page {
+    overflow: auto;
+    margin: 0 auto;
+    height: 100vh;
     font-family: 'Inter', Arial, sans-serif;
-    background-color: #000000;
-    color: #FFFFFF;
-    font-weight: 400;
-    margin: 0;
-    -webkit-font-smoothing: antialiased;
+    background: #000;
     -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
     -webkit-text-size-adjust: 100%;
     -ms-text-size-adjust: 100%;
     -moz-text-size-adjust: 100%;
-    text-rendering: optimizeLegibility;
-}
+    }

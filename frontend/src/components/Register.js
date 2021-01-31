@@ -1,25 +1,65 @@
-import React from "react";
-import FormContent from "./FormContent";
+import React from 'react';
 import { Link } from 'react-router-dom';
+import Form from './Form';
+import AuthInput from './AuthInput';
+import SubmitButton from './SubmitButton.js';
+import Header from './Header';
 
-const Register = ({ onRegister, isLoading }) => {
-  const submitValue = `${isLoading ? `Регистрация...` : `Зарегистрироваться`}`;
-  const formName = "register";
+function Register({ onRegister }) {
 
-  const handleRegisterSubmit = ({ email, password }) => {
-    if (!email || !password) {
-      return;
-    }
-    onRegister(email, password);
+  const [inputValue, setInputValue] = React.useState({
+    email: '',
+    password: ''
+  });
+  
+  function handleInputChange(e) {
+    const { name, value } = e.target;
+    setInputValue({
+      ...inputValue,
+      [name]: value,
+    });
   }
 
+
+  function handleSubmit(e) {
+    e.preventDefault();
+    const { email, password } = inputValue;
+    onRegister(email, password);
+  }
   return (
-    <section className="register">
-      <h2 className="popup__title popup__title_type_white">Регистрация</h2>
-      <FormContent handleSubmit={handleRegisterSubmit} formName={formName} submitValue={submitValue} />
-      <Link to="signin" className="register__link">Уже зарегистрированы? Войти</Link>
-    </section>
+    <>
+      <Header
+        link="Войти" path='/sign-in'
+      />
+      <Form
+        title="Регистрация"
+        onSubmit={handleSubmit}
+        text={"Уже зарегистрированы?"}
+        link={<Link className="auth__link opacity" to="/sign-in">Войти</Link>}
+      >
+        <AuthInput
+          type="email"
+          placeholder="Email"
+          value={inputValue.email}
+          name="email"
+          onChange={handleInputChange}
+        />
+        <AuthInput
+          type="password"
+          placeholder="Пароль"
+          value={inputValue.password}
+          name="password"
+          onChange={handleInputChange}
+        />
+        <SubmitButton
+          button="Зарегистрироваться"
+          classname="auth"
+        >
+        </SubmitButton>
+      </Form>
+    </>
   );
 }
 
 export default Register;
+

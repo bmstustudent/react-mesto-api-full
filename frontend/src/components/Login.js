@@ -1,23 +1,63 @@
-import React from "react";
-import FormContent from "./FormContent";
+import React from 'react';
+import Form from './Form';
+import AuthInput from './AuthInput';
+import SubmitButton from './SubmitButton.js';
+import Header from './Header';
 
-const Login = ({onLogin, isLoading}) => {
-  const submitValue = `${isLoading ? `Выполняется вход...` : `Войти`}`;
-  const formName = "login";
 
-  const handleLoginSubmit = ({email, password}) => {
-    if (!email || !password){
-      return;
-    }
-    onLogin(email, password);
+function Login({ onLoggin }) {
+  const [inputValue, setInputValue] = React.useState({ 
+    email: '', 
+    password: '' 
+  });
+
+  function handleInputChange(e) {
+    const { name, value } = e.target;
+    setInputValue({
+      ...inputValue,
+      [name]: value,
+    });
   }
 
+  function handleSubmit(e) {
+    e.preventDefault()
+    const { email, password } = inputValue;
+    if (!email || !password) {
+      return;
+    }
+    onLoggin(email, password);
+  }
   return (
-    <section className="register">
-      <h2 className="popup__title popup__title_type_white">Вход</h2>
-        <FormContent handleSubmit={handleLoginSubmit} formName={formName} submitValue={submitValue}/>
-    </section>
-  )
+    <>
+      <Header
+        link="Регистрация" path='/signup'
+      />
+      <Form
+        title="Вход"
+        onSubmit={handleSubmit}
+      >
+        <AuthInput
+          type="email"
+          placeholder="Email"
+          value={inputValue.email}
+          name="email"
+          onChange={handleInputChange}
+        />
+        <AuthInput
+          type="password"
+          placeholder="Пароль"
+          value={inputValue.password}
+          name="password"
+          onChange={handleInputChange}
+        />
+        <SubmitButton
+          button="Войти"
+          classname="auth"
+        >
+        </SubmitButton>
+      </Form>
+    </>
+  );
 }
 
 export default Login;
