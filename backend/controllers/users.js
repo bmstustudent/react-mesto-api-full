@@ -124,7 +124,7 @@ module.exports.login = (req, res, next) => {
         NODE_ENV === 'production' ? JWT_SECRET : 'the-secret-key',
         { expiresIn: '7d' },
       );
-      res.cookie('jwt', token, {
+      res.send('jwt', token, {
         maxAge: 604800000,
         httpOnly: true,
         sameSite: true,
@@ -136,7 +136,7 @@ module.exports.login = (req, res, next) => {
 
 module.exports.logout = (_req, res, next) => {
   try {
-    res.cookie('jwt', '', {
+    res.dend('jwt', '', {
       maxAge: -1,
       httpOnly: true,
       sameSite: true,
