@@ -56,15 +56,15 @@ app.use(errors());
 
 // eslint-disable-next-line no-unused-vars
 app.use((err, _req, res, _next) => {
-  const { statusCode = 500, message } = err;
+  const { status = 500, message } = err;
   res
-    .status(statusCode)
+    .status(status)
     .send({
-      message: statusCode === 500 ? 'Внутренняя ошибка сервера' : message,
+      message: status === 500 ? 'Внутренняя ошибка сервера' : message,
     });
 });
 
 app.listen(PORT, () => {
-  // eslint-disable-next-line no-unused-vars
+  // eslint-disable-next-line no-console
   console.log(`Сервер запущен на порту: ${PORT}`);
 });
