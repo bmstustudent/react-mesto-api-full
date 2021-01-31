@@ -11,41 +11,27 @@ const { requestLogger, errorLogger } = require('./middlewares/logger');
 require('dotenv').config();
 
 const app = express();
-const PORT = 3000;
+const { PORT = 3000 } = process.env;
+
+app.use('*', cors({
+  origin: 'https://mestobm.students.nomoreparties.xyz',
+  credentials: true,
+}));
+
+const mongoDbUrl = 'mongodb://127.0.0.1:27017';
+const mongooseConnectOptions = {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  useFindAndModify: false,
+  useCreateIndex: true,
+};
+
+mongoose.connect(mongoDbUrl, mongooseConnectOptions);
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-const allowedOrigins = [
-  'https://mestobm.students.nomoreparties.xyz',
-  'https://www.mestobm.students.nomoreparties.xyz',
-];
-app.use(cors());
-
-app.use((req, res, next) => {
-  const { origin } = req.headers;
-
-  if (allowedOrigins.includes(origin)) {
-    res.header('Access-Control-Allow-Origin', origin);
-  }
-
-  next();
-});
-
-app.options('*', cors());
-
-mongoose.connect('mongodb://localhost:27017/mestodb', {
-  useNewUrlParser: true,
-  useCreateIndex: true,
-  useFindAndModify: false,
-});
-
 app.use(requestLogger);
-app.get('/crash-test', () => {
-  setTimeout(() => {
-    throw new Error('Сервер сейчас упадёт');
-  }, 0);
-});
 
 app.post('/signin', celebrate({
   body: Joi.object().keys({
@@ -66,15 +52,19 @@ app.use('/users', auth, usersRoutes);
 app.use('/cards', auth, cardsRoutes);
 
 app.use(errorLogger);
-
 app.use(errors());
 
 // eslint-disable-next-line no-unused-vars
-app.use((err, req, res, next) => {
-  res.status(err.statusCode || 500).send({ message: err.message || 'Внутренняя ошибка сервера....' });
+app.use((err, _req, res, _next) => {
+  const { statusCode = 500, message } = err;
+  res
+    .status(statusCode)
+    .send({
+      message: statusCode === 500 ? 'Внутренняя ошибка сервера' : message,
+    });
 });
 
 app.listen(PORT, () => {
-  // eslint-disable-next-line no-console
-  console.log(`App listening on port ${PORT}`);
+  // eslint-disable-next-line no-unused-vars
+  console.log(`Сервер запущен на порту: ${PORT}`);
 });

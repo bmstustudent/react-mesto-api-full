@@ -1,102 +1,129 @@
+import { getToken } from "./token";
+
 class Api {
   constructor({ baseUrl, headers }) {
     this.baseUrl = baseUrl;
+    this.headers = headers;
   }
 
-  _getResponseData(res) {
-    if (res.ok) {
-      return res.json()
+  getHeaders() {
+    const token = getToken();
+
+    return {
+      ...this.headers,
+      'Authorization': `Bearer ${token}`
     }
-    return Promise.reject(new Error(`Error: ${res.status}`))
   }
 
   getUserInfo() {
     return fetch(`${this.baseUrl}users/me`, {
-      headers: {
-        Accept: 'application/json',
-        authorization: `Bearer ${localStorage.getItem('jwt')}`,
-        'Content-Type': 'application/json',
-      },
-    }).then((res) => this._getResponseData(res))
+      headers: this.getHeaders(),
+    })
+      .then(res => {
+        if (res.ok) {
+          return res.json()
+        }
+        return Promise.reject(`Ошибка: ${res.status}`)
+      })
   }
 
   getCards() {
     return fetch(`${this.baseUrl}cards`, {
-      headers: {
-        Accept: 'application/json',
-        authorization: `Bearer ${localStorage.getItem('jwt')}`,
-        'Content-Type': 'application/json',
-      },
-    }).then((res) => this._getResponseData(res))
+      headers: this.getHeaders(),
+    })
+      .then(res => {
+        if (res.ok) {
+          return res.json()
+        }
+        return Promise.reject(`Ошибка: ${res.status}`)
+      })
   }
 
   setUserInfo(item) {
     return fetch(`${this.baseUrl}users/me`, {
       method: 'PATCH',
-      headers: {
-        Accept: 'application/json',
-        authorization: `Bearer ${localStorage.getItem('jwt')}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(item)
-    }).then((res) => this._getResponseData(res))
+      headers: this.getHeaders(),
+      body: JSON.stringify({
+        name: item.name,
+        about: item.about
+      })
+    })
+      .then(res => {
+        if (res.ok) {
+          return res.json()
+        }
+        return Promise.reject(`Ошибка: ${res.status}`)
+      })
   }
 
   createCard(newCard) {
     return fetch(`${this.baseUrl}cards`, {
       method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        authorization: `Bearer ${localStorage.getItem('jwt')}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(newCard)
-    }).then((res) => this._getResponseData(res))
+      headers: this.getHeaders(),
+      body: JSON.stringify({
+        name: newCard.name,
+        link: newCard.link,
+      })
+    })
+      .then(res => {
+        if (res.ok) {
+          return res.json()
+        }
+        return Promise.reject(`Ошибка: ${res.status}`)
+      })
   }
 
   deleteCard(id) {
     return fetch(`${this.baseUrl}cards/${id}`, {
       method: 'DELETE',
-      headers: {
-        Accept: 'application/json',
-        authorization: `Bearer ${localStorage.getItem('jwt')}`,
-        'Content-Type': 'application/json',
-      },
-    }).then((res) => this._getResponseData(res))
+      headers: this.getHeaders(),
+    })
+      .then(res => {
+        if (res.ok) {
+          return res.json()
+        }
+        return Promise.reject(`Ошибка: ${res.status}`)
+      })
   }
 
   likeCard(id) {
     return fetch(`${this.baseUrl}cards/${id}/likes`, {
       method: 'PUT',
-      headers: {
-        Accept: 'application/json',
-        authorization: `Bearer ${localStorage.getItem('jwt')}`,
-        'Content-Type': 'application/json',
-      },
-    }).then((res) => this._getResponseData(res))
+      headers: this.getHeaders(),
+    })
+      .then(res => {
+        if (res.ok) {
+          return res.json()
+        }
+        return Promise.reject(`Ошибка: ${res.status}`)
+      })
   }
 
   dislikeCard(id) {
     return fetch(`${this.baseUrl}cards/${id}/likes`, {
       method: 'DELETE',
-      headers: {
-        Accept: 'application/json',
-        authorization: `Bearer ${localStorage.getItem('jwt')}`,
-        'Content-Type': 'application/json',
-      },
-    }).then((res) => this._getResponseData(res))
+      headers: this.getHeaders(),
+    })
+      .then(res => {
+        if (res.ok) {
+          return res.json()
+        }
+        return Promise.reject(`Ошибка: ${res.status}`)
+      })
   }
 
   setAvatar(avatar) {
     return fetch(`${this.baseUrl}users/me/avatar`, {
       method: 'PATCH',
-      headers: {
-        Accept: 'application/json',
-        authorization: `Bearer ${localStorage.getItem('jwt')}`,
-        'Content-Type': 'application/json',
-      },
+      headers: this.getHeaders(),
       body: JSON.stringify(avatar),
-    }).then((res) => this._getResponseData(res))
+    })
+      .then(res => {
+        if (res.ok) {
+          return res.json()
+        }
+        return Promise.reject(`Ошибка: ${res.status}`)
+      })
   }
 }
 
