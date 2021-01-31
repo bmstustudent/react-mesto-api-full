@@ -1,115 +1,119 @@
-const { NODE_ENV, JWT_SECRET } = process.env;
 const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
 const User = require('../models/user');
+const Unautorized = require('../errors/unauthorized');
 const ConflictingRequest = require('../errors/conflicting-request');
 const NotFoundError = require('../errors/not-found-err');
-const BadRequest = require('../errors/bad-request');
+const jwtSign = require('../utils/jwt-sign');
+const { ERROR_CODE } = require('../utils/error-code');
 
-
-const getUsers = (req, res, next) => {
-  User.find({})
-    .then((users) => {
-      res.status(200).send({ users });
-    })
-    .catch((err) => next(err));
+const getUsers = async (req, res, next) => {
+  try {
+    const users = await User.find({});
+    res.send(users);
+  } catch (err) {
+    if (err.name === 'CastError') {
+      err.statusCode = ERROR_CODE;
+    }
+    next(err);
+  }
 };
 
 const getCurrentUser = async (req, res, next) => {
-  User.findById(req.params.id)
-    .then((user) => {
-      if (!user) {
-        throw new NotFoundError('Запрашиваемый ресурс не найден');
-      }
-      return res.status(200).send(user);
-    })
-    .catch((err) => next(err));
+  try {
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      throw new NotFoundError('Нет пользователя с таким id');
+    }
+    res.send(user);
+  } catch (err) {
+    if (err.name === 'CastError') {
+      err.statusCode = ERROR_CODE;
+    }
+    next(err);
+  }
 };
 
 const getUser = async (req, res, next) => {
-  User.findById(req.user._id)
-    .then((user) => {
-      if (!user) {
-        throw new NotFoundError('Запрашиваемый ресурс не найден');
-      }
-      return res.status(200).send(user);
-    })
-    .catch((err) => next(err));
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user) {
+      throw new NotFoundError('Нет пользователя с таким id');
+    }
+    res.send(user);
+  } catch (err) {
+    if (err.name === 'CastError') {
+      err.statusCode = ERROR_CODE;
+    }
+    next(err);
+  }
 };
 
 const createUser = (req, res, next) => {
-  const {
-    name, about, avatar, email, password,
-  } = req.body;
+  const { email, password } = req.body;
+
   User.findOne({ email })
     .then((user) => {
       if (user) {
-        throw new ConflictingRequest('Пользователь с таким email уже существует');
+        throw new ConflictingRequest('Уже есть такой email');
       }
       return bcrypt.hash(password, 10);
     })
-    .then((hash) => User.create({
-      name, about, avatar, email, password: hash,
-    }))
-    .then((user) => res.status(200).send({
-      email: user.email,
-      _id: user._id,
-    }))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        next(new BadRequest('Переданы некорректные данные'));
-      }
-      next(err);
-    });
+    .then((hash) => {
+      User.create({ email, password: hash })
+        .then(({ _id }) => {
+          res.send({ email, _id });
+        });
+    })
+    .catch(next);
 };
 
 const login = (req, res, next) => {
   const { email, password } = req.body;
-  User.findUserByCredentials(email, password)
+
+  return User.findOne({ email }).select('+password')
     .then((user) => {
-      const token = jwt.sign({ _id: user._id }, NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret', { expiresIn: '7d' });
-      res.status(200).send({ token, name: user.name, email: user.email });
-    })
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        next(new BadRequest('Переданы некорректные данные'));
+      if (!user) {
+        throw new Unautorized('Неправильные почта или пароль');
       }
-      next(err);
-    });
+      return bcrypt.compare(password, user.password)
+        .then((matched) => {
+          if (!matched) {
+            throw new Unautorized('Неправильные почта или пароль');
+          }
+          const token = jwtSign(user._id);
+          res.send({ token });
+        });
+    })
+    .catch(next);
 };
 
-
 const updateUser = async (req, res, next) => {
-  const { name, about } = req.body;
-  // eslint-disable-next-line no-console
-  console.log(req.body);
-  // eslint-disable-next-line no-console
-  console.log(req.user._id);
-  User.findByIdAndUpdate(req.user._id, { name, about }, { new: true })
-    .then((user) => {
-      res.status(200).send(user);
-    })
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        next(new BadRequest('Переданы некорректные данные'));
-      }
-      next(err);
-    });
+  try {
+    const user = await User.findByIdAndUpdate(req.user.id, {
+      name: req.body.name,
+      about: req.body.about,
+    }, { runValidators: true, new: true });
+    res.send(user);
+  } catch (err) {
+    if (err.name === 'CastError' || err.name === 'ValidationError') {
+      err.statusCode = ERROR_CODE;
+    }
+    next(err);
+  }
 };
 
 const updateAvatarUser = async (req, res, next) => {
-  const { avatar } = req.body;
-
-  User.findByIdAndUpdate(req.user._id, { avatar }, { new: true })
-    .then((user) => {
-      res.status(200).send(user);
-    })
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        next(new BadRequest('Переданы некорректные данные'));
-      }
-      next(err);
-    });
+  try {
+    const avatar = await User.findByIdAndUpdate(req.user.id, {
+      avatar: req.body.avatar,
+    }, { runValidators: true, new: true });
+    res.send(avatar);
+  } catch (err) {
+    if (err.name === 'CastError' || err.name === 'ValidationError') {
+      err.statusCode = ERROR_CODE;
+    }
+    next(err);
+  }
 };
 
 module.exports = {
