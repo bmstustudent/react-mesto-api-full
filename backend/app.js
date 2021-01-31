@@ -6,7 +6,10 @@ const { errors } = require('celebrate');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 require('dotenv').config();
 const { routerIndex } = require('./routes/index');
+const usersRoutes = require('./routes/users.js');
+const cardsRoutes = require('./routes/cards.js');
 const NotFoundError = require('./errors/not-found-err');
+const auth = require('./middlewares/auth');
 
 const app = express();
 const { PORT = 3001 } = process.env;
@@ -45,6 +48,11 @@ app.get('/crash-test', () => {
     throw new Error('Сервер сейчас упадёт');
   }, 0);
 });
+
+app.use(auth);
+
+app.use('/users', auth, usersRoutes);
+app.use('/cards', auth, cardsRoutes);
 
 app.use('/', routerIndex);
 app.use(errorLogger);
