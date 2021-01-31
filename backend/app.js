@@ -50,7 +50,7 @@ app.post('/signup', celebrate({
 app.use(auth);
 
 app.use('/users', auth, usersRoutes);
-app.post('/cards', auth, cardsRoutes);
+app.use('/cards', auth, cardsRoutes);
 
 app.use(errorLogger); // подключаем логгер ошибок
 
