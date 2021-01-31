@@ -1,0 +1,18 @@
+.popup__submit_type_white {
+  min-height: 50px;
+  color: #000000;
+  background-color: #FFFFFF;
+  transition: background-color 0.3s ease-in;
+}
+
+.popup__submit_type_white:hover {
+  background-color: rgba(255, 255, 255, 0.85);
+}
+
+@media screen and (max-width: 450px){
+  .popup__submit_type_white {
+    min-height: 46px;
+    font-size: 16px;
+    line-height: 1.19;
+  }
+}

@@ -1,0 +1,22 @@
+.header__menu_type_active {
+  display: none;
+}
+
+@media screen and (max-width: 425px) {
+  .header__menu.header__menu_type_active {
+    display: block;
+    background-color: transparent;
+  }
+
+  .header__menu.header__menu_type_active::before {
+    transform: rotate(45deg) scale(1.25);
+    top: 0;
+    transition: top 0.2s linear, transform 0.2s ease-in 0.2s;
+  }
+
+  .header__menu.header__menu_type_active::after {
+    transform: rotate(-45deg) scale(1.25);
+    top: 0;
+    transition: top 0.2s linear, transform 0.2s ease-in 0.2s;
+  }
+}

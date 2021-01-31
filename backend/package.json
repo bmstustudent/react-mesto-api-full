@@ -1,7 +1,7 @@
 {
   "name": "mesto-express",
   "version": "1.0.0",
-  "description": "Mesto Russia project",
+  "description": "mesto-russia",
   "main": "index.js",
   "scripts": {
     "start": "node app.js",

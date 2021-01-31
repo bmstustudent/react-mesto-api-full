@@ -1,55 +1,46 @@
-import React, { useEffect, useCallback } from 'react';
+import React from "react";
 
-function Popup({ isOpen, onClose, theme, container, title, children }) {
-  /**
-   * @function closeOnBlack
-   * @description Закрывает попап при клике на черной подложке
-   * @param {object} evt событие
-   */
-  const closeOnBlack = (evt) => {
-    if (evt.target === evt.currentTarget) {
+const Popup = ({name, isOpen, onClose, children}) => {
+  const handleEscapeClose = (event) => {
+    if (event.key === 'Escape') {
       onClose();
     }
   };
 
-  /**
-   * @function handleEscClose
-   * @description Закрывает попап при нажатии на Esc
-   * @param {object} evt событие
-   */
-  const handleEscClose = useCallback(
-    (evt) => {
-      if (evt.key === 'Escape') {
-        onClose();
-      }
-    },
-    [onClose]
-  );
+  React.useEffect(() => {
+    document.addEventListener("keydown", handleEscapeClose, false);
 
-  useEffect(() => {
-    if (isOpen) {
-      document.addEventListener('keydown', handleEscClose);
-      return () => {
-        document.removeEventListener('keydown', handleEscClose);
-      };
+    return () => {
+      document.removeEventListener("keydown", handleEscapeClose, false);
+    };
+  }, [isOpen]);
+
+  const handleOverlayClose = (event) => {
+    if (event.target === event.currentTarget && isOpen) {
+      onClose();
     }
-  }, [isOpen, handleEscClose]);
+  };
+
+  const handleClassName = (name) => {
+    if (name === "picture") {
+      return "popup__container popup__container_type_picture";
+    } else if (name === "info") {
+      return "popup__container popup__container_type_info";
+    } else {
+      return "popup__container";
+    }
+  }
 
   return (
-    <div
-      className={`popup popup_theme_${theme}${isOpen ? ' popup_opened' : ''}`}
-      onMouseDown={closeOnBlack}
-    >
-      <div className={`popup__container popup__container_type_${container}`}>
-        <button
-          onClick={onClose}
-          type="button"
-          className="button button_type_close"
-        ></button>
-        {title && <h2 className="popup__title">{title}</h2>}
+    <section className={`${isOpen ? `popup popup_type_${name} popup_opened` : `popup popup_type_${name}`}`}
+             onMouseUp={handleOverlayClose}>
+      <div className={handleClassName(name)}>
+        <button className={`${(name === "info") ? `button popup__close popup__close_type_info opacity` : `button popup__close opacity`}`}
+                type="button"
+                onClick={onClose}/>
         {children}
       </div>
-    </div>
+    </section>
   );
 }
 

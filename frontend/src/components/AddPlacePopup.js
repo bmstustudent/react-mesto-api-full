@@ -1,81 +1,69 @@
-import React, { useEffect, useState } from 'react';
-import PopupWithForm from './PopupWithForm';
-import useFormWithValidation from '../hooks/useForm';
+import React from "react";
+import Popup from "./Popup";
+import useValidation from "../hooks/useValidation";
 
-export default function AddPlacePopup({ onAddPlace, isOpen, onClose }) {
-  const [isLoading, setIsLoading] = useState(false);
+const AddPlacePopup = ({ isOpen, onClose, onAddPlace, isLoading }) => {
+  const fields = ['name', 'link'];
 
   const {
-    values,
-    handleChange,
-    errors,
-    isValid,
-    resetForm,
-  } = useFormWithValidation();
+    isValid, setIsValid,
+    inputValue, setInputValue,
+    validationMessage, setValidationMessage,
+    handleInputChange, fieldsEnumeration
+  } = useValidation(fields);
 
-  useEffect(() => {
-    resetForm();
-  }, [resetForm, isOpen]);
-
-  const handleSubmit = (evt) => {
-    evt.preventDefault();
-    setIsLoading(true);
+  const handleSubmit = (event) => {
+    event.preventDefault();
     onAddPlace({
-      name: values.place,
-      link: values.link,
-    }).finally(() => {
-      setIsLoading(false);
+      name: inputValue.name,
+      link: inputValue.link
     });
-  };
+  }
+
+  React.useEffect(() => {
+    setInputValue(fieldsEnumeration(''));
+    setIsValid(fieldsEnumeration(false));
+    setValidationMessage(fieldsEnumeration(''));
+  }, [isOpen, setInputValue, setIsValid, setValidationMessage]);
 
   return (
-    <PopupWithForm
-      title="Новое место"
-      name="add-card"
-      buttonName={isLoading ? 'Сохранение...' : 'Создать'}
+    <Popup
+      name="add"
       isOpen={isOpen}
-      onClose={onClose}
-      isValid={isValid}
-      onSubmit={handleSubmit}
-    >
-      <label className="form__item-container">
+      onClose={onClose}>
+      <h2 className="popup__title">Новое место</h2>
+      <form className={'popup__form form_type_add'}
+        action="#"
+        name="add"
+        onSubmit={handleSubmit}
+        noValidate>
+        <div className="popup__cover">
+          <label className="popup__control">
+            <input
+              className={`${validationMessage.name ? `popup__input popup__input_type_title popup__input_type_error` : `popup__input popup__input_type_title`}`}
+              type="text" name="name" placeholder="Название" minLength="1" maxLength="30"
+              pattern="^[A-Za-zА-Яа-яЁё\D][A-Za-zА-Яа-яЁё\s\D]*[A-Za-zА-Яа-яЁё\D]$"
+              required value={inputValue.name}
+              onChange={handleInputChange} />
+            <span
+              className={`${isValid.name ? `popup__error` : `popup__error popup__error_type_active`}`}>{validationMessage.name}</span>
+          </label>
+          <label className="popup__control">
+            <input
+              className={`${validationMessage.link ? `popup__input popup__input_type_link popup__input_type_error` : `popup__input popup__input_type_link`}`}
+              type="url" name="link" placeholder="Ссылка на картинку" required value={inputValue.link}
+              onChange={handleInputChange} />
+            <span
+              className={`${isValid.link ? `popup__error` : `popup__error popup__error_type_active`}`}>{validationMessage.link}</span>
+          </label>
+        </div>
         <input
-          id="place-name-input"
-          type="text"
-          name="place"
-          className="form__item"
-          placeholder="Название"
-          minLength="1"
-          maxLength="30"
-          value={values.place || ''}
-          onChange={handleChange}
-          required
-        />
-        <span
-          id="place-name-input-error"
-          className="form__input-error form__input-error_active"
-        >
-          {errors.place || ''}
-        </span>
-      </label>
-      <label className="form__item-container">
-        <input
-          id="place-link-input"
-          type="url"
-          name="link"
-          className="form__item"
-          placeholder="Ссылка на картинку"
-          value={values.link || ''}
-          onChange={handleChange}
-          required
-        />
-        <span
-          id="place-link-input-error"
-          className="form__input-error form__input-error_active"
-        >
-          {errors.link || ''}
-        </span>
-      </label>
-    </PopupWithForm>
-  );
+          className={`${isValid.link && isValid.name ? `button popup__submit` : `button popup__submit popup__submit_type_disabled`}`}
+          type="submit" value={`${isLoading ? `Сохранение...` : `Сохранить`}`}
+          name="submit" />
+      </form>
+    </Popup>
+  )
 }
+
+export default AddPlacePopup;

@@ -1,22 +1,24 @@
-import React from 'react';
+import React from "react";
+import FormContent from "./FormContent";
 import { Link } from 'react-router-dom';
-import AuthForm from './AuthForm';
 
+const Register = ({ onRegister, isLoading }) => {
+  const submitValue = `${isLoading ? `Регистрация...` : `Зарегистрироваться`}`;
+  const formName = "register";
 
-function Register(props) {
+  const handleRegisterSubmit = ({ email, password }) => {
+    if (!email || !password) {
+      return;
+    }
+    onRegister(email, password);
+  }
+
   return (
-    <AuthForm
-      type="Регистрация"
-      buttonName="Зарегистрироваться"
-      {...props}
-    >
-      <p className="auth-container__info">
-        Уже зарегистрированы?{' '}
-        <Link to="/signin" className="link">
-          Войти
-        </Link>
-      </p>
-    </AuthForm>
+    <section className="register">
+      <h2 className="popup__title popup__title_type_white">Регистрация</h2>
+      <FormContent handleSubmit={handleRegisterSubmit} formName={formName} submitValue={submitValue} />
+      <Link to="signin" className="register__link">Уже зарегистрированы? Войти</Link>
+    </section>
   );
 }
 
