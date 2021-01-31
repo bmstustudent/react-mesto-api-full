@@ -1,17 +1,17 @@
-import React from "react";
-import Popup from "./Popup";
-import success from '../images/success.svg';
-import error from '../images/error.svg';
+import React from 'react';
+import Popup from './Popup';
 
-const InfoTooltip = ({isRegister, isOpen, onClose}) => {
+function InfoTooltip({ regSuccess, message, ...props }) {
   return (
-    <Popup name="info"
-           isOpen={isOpen}
-           onClose={onClose}>
-        <img className="popup__icon" src={`${isRegister ? `${success}` : `${error}`}`}
-             alt="Значок об успешной регистрации либо ошибке"/>
-        <h2 className="popup__title popup__title_type_center">{`${isRegister ? `Вы успешно зарегистрировались!` : `Что-то пошло не так!
-Попробуйте ещё раз.`}`}</h2>
+    <Popup theme="lighter" container="tooltip" {...props}>
+      <div
+        className={`popup__reg-status popup__reg-status_type_${
+          regSuccess ? 'success' : 'failure'
+        }`}
+      />
+      <h2 className="popup__title popup__title_type_register">
+        {message}
+      </h2>
     </Popup>
   );
 }

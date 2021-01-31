@@ -1,5 +1,28 @@
-@import url('./__image/logo__image.css');
-
 .logo {
-    transition: opacity 0.3s ease-in;
+  display: block;
+  width: 143px;
+  height: 34px;
+}
+
+@media all and (max-width: 920px) {
+  .logo {
+    padding-left: 27px;
+    padding-right: 27px;
+  }
+}
+
+@media all and (max-width: 768px) {
+  .logo {
+    width: 104px;
+    height: 25px;
+  }
+}
+
+@media all and (max-width: 520px) {
+  .logo {
+    width: 104px;
+    height: 25px;
+    padding: 27px;
+    align-self: start;
+  }
 }
