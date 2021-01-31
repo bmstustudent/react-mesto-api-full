@@ -1,104 +1,69 @@
-import React from 'react';
-import Popup from './Popup';
-import SubmitButton from './SubmitButton.js';
+import React from "react";
+import Popup from "./Popup";
+import useValidation from "../hooks/useValidation";
 
-function AddPlacePopup({ onClick, onAddPlace, isOpen, onClose}) {
+const AddPlacePopup = ({ isOpen, onClose, onAddPlace, isLoading }) => {
+  const fields = ['name', 'link'];
 
-    const [inputValue, setInputValue] = React.useState({ name: '', link: '', });
-    const [isValid, setIsValid] = React.useState({ name: false, link: false });
-    const [validationMessage, setValidationMessage] = React.useState({ name: '', link: '' });
-    const isFormValid = Object.values(isValid).every(Boolean);
+  const {
+    isValid, setIsValid,
+    inputValue, setInputValue,
+    validationMessage, setValidationMessage,
+    handleInputChange, fieldsEnumeration
+  } = useValidation(fields);
 
-    function handleInputChange(event) {
-        const { name, value } = event.target;
-        setInputValue({
-            ...inputValue,
-            [name]: value,
-        });
-        setIsValid({
-            ...isValid,
-            [name]: event.target.validity.valid,
-        })
-        setValidationMessage({
-            ...validationMessage,
-            [name]: event.target.validationMessage,
-        })
-    }
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    onAddPlace({
+      name: inputValue.name,
+      link: inputValue.link
+    });
+  }
 
-    function handleSubmit(event) {
-        event.preventDefault();
-        onAddPlace({
-            name: inputValue.name,
-            link: inputValue.link,
-        });
-    }
+  React.useEffect(() => {
+    setInputValue(fieldsEnumeration(''));
+    setIsValid(fieldsEnumeration(false));
+    setValidationMessage(fieldsEnumeration(''));
+  }, [isOpen, setInputValue, setIsValid, setValidationMessage]);
 
-    React.useEffect(() => {
-        setInputValue({ name: '', link: '' });
-        setValidationMessage({ name: '', link: '' });
-        setIsValid({ name: false, link: false });
-    }, [isOpen])
-
-    return (
-        <Popup
-            name="add"
-            classname="popup__container"
-            isOpen={isOpen}
-            onClose={onClose}
-        >
-            <h3 className="popup__title">Новое место</h3>
-            <form
-                onSubmit={handleSubmit}
-                className="popup__form"
-                action="#"
-                method="POST"
-                noValidate
-            >
-                <label className="popup__field">
-                    <input
-                        type="text"
-                        value={inputValue.name}
-                        className="popup__item"
-                        name="name"
-                        placeholder="Название"
-                        required
-                        minLength="1" maxLength="30"
-                        onChange={handleInputChange}
-                    />
-                    <span
-                        id="title-input-error"
-                        className={!isValid.name ? 'popup__item-error' : ""}
-                    >
-                        {validationMessage.name}
-                    </span>
-                </label>
-                <label className="popup__field">
-                    <input
-                        type="url"
-                        value={inputValue.link}
-                        className="popup__item"
-                        name="link"
-                        placeholder="Ссылка на картинку"
-                        required
-                        onChange={handleInputChange}
-                    />
-                    <span
-                        id="title-input-error"
-                        className={!isValid.link ? 'popup__item-error' : ""}
-                    >
-                        {validationMessage.link}
-                    </span>
-                </label>
-                <SubmitButton
-                    classname="popup"
-                    isDisabled={!isFormValid}
-                    button="Создать"
-                    onClick={onClick}
-                >
-                </SubmitButton>
-            </form>
-        </Popup>
-    )
+  return (
+    <Popup
+      name="add"
+      isOpen={isOpen}
+      onClose={onClose}>
+      <h2 className="popup__title">Новое место</h2>
+      <form className={'popup__form form_type_add'}
+        action="#"
+        name="add"
+        onSubmit={handleSubmit}
+        noValidate>
+        <div className="popup__cover">
+          <label className="popup__control">
+            <input
+              className={`${validationMessage.name ? `popup__input popup__input_type_title popup__input_type_error` : `popup__input popup__input_type_title`}`}
+              type="text" name="name" placeholder="Название" minLength="1" maxLength="30"
+              pattern="^[A-Za-zА-Яа-яЁё\D][A-Za-zА-Яа-яЁё\s\D]*[A-Za-zА-Яа-яЁё\D]$"
+              required value={inputValue.name}
+              onChange={handleInputChange} />
+            <span
+              className={`${isValid.name ? `popup__error` : `popup__error popup__error_type_active`}`}>{validationMessage.name}</span>
+          </label>
+          <label className="popup__control">
+            <input
+              className={`${validationMessage.link ? `popup__input popup__input_type_link popup__input_type_error` : `popup__input popup__input_type_link`}`}
+              type="url" name="link" placeholder="Ссылка на картинку" required value={inputValue.link}
+              onChange={handleInputChange} />
+            <span
+              className={`${isValid.link ? `popup__error` : `popup__error popup__error_type_active`}`}>{validationMessage.link}</span>
+          </label>
+        </div>
+        <input
+          className={`${isValid.link && isValid.name ? `button popup__submit` : `button popup__submit popup__submit_type_disabled`}`}
+          type="submit" value={`${isLoading ? `Сохранение...` : `Сохранить`}`}
+          name="submit" />
+      </form>
+    </Popup>
+  )
 }
 
 export default AddPlacePopup;

@@ -1,0 +1,12 @@
+.popup__close_type_info {
+
+}
+
+@media screen and (max-width: 450px) {
+  .popup__close_type_info {
+    width: 42px;
+    height: 42px;
+    top: -15%;
+    left: 45%;
+  }
+}

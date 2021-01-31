@@ -1,12 +1,9 @@
-@import url(./__delete/button__delete.css);
-@import url(./__like/button__like.css);
+@import url('./_edit/button_edit.css');
+@import url('./_add/button_add.css');
 
 .button {
-    padding: 0;
-    background-color: Transparent;
+    display: block;
     cursor: pointer;
-    background-position: center;
-    background-repeat: no-repeat;
     box-sizing: border-box;
-    outline: none;
+    box-shadow: none;
 }

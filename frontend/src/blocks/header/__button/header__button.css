@@ -1,22 +1,15 @@
 .header__button {
-  visibility: hidden;
-  opacity: 0;
+  font-size: 18px;
+  line-height: 1.22;
+  color: #FFFFFF;
+  background-color: transparent;
+  box-shadow: none;
   border: none;
-  position: absolute;
-  right: 0px;
-  bottom: 0;
-  margin-bottom: 40px;
 }
 
-@media screen and (max-width: 760px) {
+@media screen and (max-width: 425px){
   .header__button {
-    opacity: 1;
-    visibility: visible;
-  }
-}
-
-@media screen and (max-width: 475px) {
-  .header__button {
-    margin-bottom: 25px;
+    font-size: 14px;
+    line-height: 1.21;
   }
 }

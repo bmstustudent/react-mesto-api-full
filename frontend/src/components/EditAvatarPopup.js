@@ -1,81 +1,60 @@
-import React from 'react';
-import Popup from './Popup';
-import SubmitButton from './SubmitButton.js';
+import React from "react";
+import Popup from "./Popup";
+import useValidation from "../hooks/useValidation";
 
-function EditAvatarPopup({ isOpen, onClose, onUpdateAvatar, onClick }) {
-    const avatarRef = React.useRef('');
-    const [isValid, setIsValid] = React.useState(false);
-    const [validationMessage, setValidationMessage] = React.useState('');
-    const [isFormValid, setFormValid] = React.useState(false);
+const EditAvatarPopup = ({ isOpen, onClose, onUpdateAvatar, isLoading }) => {
+    const fields = ['avatar'];
 
-    function handleChange(event) {
-        if (!event.target.validity.valid) {
-            setIsValid(true)
-            setValidationMessage(event.target.validationMessage)
-            setFormValid();
-        } else {
-            setIsValid(false)
-            setValidationMessage('')
-            setFormValid(true);
-        }
-    };
+    const {
+        isValid, setIsValid,
+        inputValue, setInputValue,
+        validationMessage, setValidationMessage,
+        handleInputChange, fieldsEnumeration
+    } = useValidation(fields);
 
-    function handleSubmit(event) {
+    const avatarInputRef = React.useRef(null);
+
+    const handleSubmit = (event) => {
         event.preventDefault();
         onUpdateAvatar({
-            link: avatarRef.current.value,
+            avatar: avatarInputRef.current.value,
         });
     }
 
     React.useEffect(() => {
-        avatarRef.current.value = '';
-        setValidationMessage('');
-        setFormValid();
-    }, [isOpen])
+        setInputValue(fieldsEnumeration(''));
+        setIsValid(fieldsEnumeration(false));
+        setValidationMessage(fieldsEnumeration(''));
+    }, [isOpen, setInputValue, setIsValid, setValidationMessage]);
 
     return (
-        <Popup
-            name="avatar"
-            classname="popup__container"
+        <Popup name="avatar"
             isOpen={isOpen}
-            onClose={onClose}
-        >
-            <h3 className="popup__title">Обновить аватар</h3>
-            <form
-                onSubmit={handleSubmit}
-                className="popup__form"
+            onClose={onClose}>
+            <h2 className="popup__title">Обновить аватар</h2>
+            <form className={'popup__form form_type_avatar'}
                 action="#"
-                method="POST"
-                noValidate
-            >
-                <label className="popup__field">
-                    <input
-                        ref={avatarRef}
-                        type="url"
-                        onChange={handleChange}
-                        id="link-input"
-                        className="popup__item"
-                        name="link"
-                        placeholder="Ссылка на картинку"
-                        required />
-                    <span
-                        id="link-input-error"
-                        className={isValid ? 'popup__item-error' : ""}
-                    >
-                        {validationMessage}
-                    </span>
-                </label>
-                <SubmitButton
-                    classname="popup"
-                    isDisabled={!isFormValid}
-                    button="Сохранить"
-                    onClick={onClick}
-                >
-                </SubmitButton>
+                name="avatar"
+                onSubmit={handleSubmit}
+                noValidate>
+                <div className="popup__cover popup__cover_type_avatar">
+                    <label className="popup__control">
+                        <input ref={avatarInputRef}
+                            className={`${validationMessage.avatar ? `popup__input popup__input_type_avatar popup__input_type_error` : `popup__input popup__input_type_avatar`}`}
+                            type="url" name="avatar" value={inputValue.avatar} placeholder="Ссылка на картинку"
+                            onChange={handleInputChange} required />
+                        <span
+                            className={`${isValid.avatar ? `popup__error` : `popup__error popup__error_type_active`}`}>{validationMessage.avatar}</span>
+                    </label>
+                </div>
+                <input
+                    className={`${isValid.avatar ? `button popup__submit` : `button popup__submit popup__submit_type_disabled`}`}
+                    type="submit"
+                    value={`${isLoading ? `Сохранение...` : `Сохранить`}`}
+                    name="submit" />
             </form>
         </Popup>
     )
 }
 
 export default EditAvatarPopup;
-

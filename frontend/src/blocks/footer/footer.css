@@ -1,13 +1,14 @@
-@import url(./__copyright/footer__copyright.css);
+@import url('./__copyright/footer__copyright.css');
+
 .footer {
-    width: 100%;
-    margin-top: 66px;
-    padding-bottom: 60px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    box-sizing: border-box;
 }
 
-@media screen and (max-width: 475px) {
+@media screen and (max-width: 930px){
     .footer {
-        margin-top: 48px;
-        margin-bottom: 36px;
+        padding: 0 19px;
     }
 }

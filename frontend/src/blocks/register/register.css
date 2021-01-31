@@ -1,0 +1,18 @@
+@import url('./__link/register__link.css');
+
+.register {
+  display: flex;
+  flex-direction: column;
+  min-width: 358px;
+  margin: 0 auto 80px;
+  padding: 60px 0 0;
+  min-height: 90vh;
+}
+
+@media screen and (max-width: 425px){
+  .register {
+    min-width: 260px;
+    padding: 40px 0 0;
+    margin: 0 auto 40px;
+  }
+}

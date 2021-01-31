@@ -1,12 +1,17 @@
 .header__logo {
-    padding-bottom: 40px;
-    padding-top: 40px;
-    transition: all .66s;
+    display: block;
+    max-width: 143px;
+    max-height: 34px;
 }
-@media screen and (max-width: 475px) {
+
+@media screen and (max-width: 660px){
     .header__logo {
-        max-width: 104px;
-        padding-top: 30px;
-        padding-bottom: 30px;
+        max-width: 122.5px;
+    }
+}
+
+@media screen and (max-width: 425px){
+    .header__logo {
+        max-width: 102.5px;
     }
 }

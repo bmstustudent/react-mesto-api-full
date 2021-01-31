@@ -1,8 +1,8 @@
-import React from 'react';
+import React from "react";
 
-function Footer() {
+const Footer = () => {
     return (
-        <footer className="footer">
+        <footer className="footer page__footer">
             <p className="footer__copyright">&copy; 2021 Mesto Russia</p>
         </footer>
     );
