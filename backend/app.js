@@ -12,34 +12,22 @@ const NotFoundError = require('./errors/not-found-err');
 const auth = require('./middlewares/auth');
 
 const app = express();
-const { PORT = 3001 } = process.env;
+const { PORT = 3000 } = process.env;
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-mongoose.connect('mongodb://localhost:27017/mestodb', {
-  useNewUrlParser: true,
-  useCreateIndex: true,
-  useFindAndModify: false,
-});
-
-const allowedOrigins = [
-  'https://mestobm.students.nomoreparties.xyz',
-  'https://www.mestobm.students.nomoreparties.xyz',
-];
 app.use(cors());
 
-app.use((req, res, next) => {
-  const { origin } = req.headers;
+const mongoDbUrl = 'mongodb://127.0.0.1:27017/mestodb';
+const mongooseConnectOptions = {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  useFindAndModify: false,
+  useCreateIndex: true,
+};
 
-  if (allowedOrigins.includes(origin)) {
-    res.header('Access-Control-Allow-Origin', origin);
-  }
-
-  next();
-});
-
-app.options('*', cors());
+mongoose.connect(mongoDbUrl, mongooseConnectOptions);
 
 app.use(requestLogger);
 
