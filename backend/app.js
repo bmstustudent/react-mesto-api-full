@@ -2,21 +2,23 @@ const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-const { errors } = require('celebrate');
+const { celebrate, Joi, errors } = require('celebrate');
 const usersRoutes = require('./routes/users.js');
 const cardsRoutes = require('./routes/cards.js');
-const { routerIndex } = require('./routes/index');
+const { login, createUser } = require('./controllers/users');
 const auth = require('./middlewares/auth');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 require('dotenv').config();
-const NotFoundError = require('./errors/not-found-err');
 
 const app = express();
-const PORT = 3000;
+const { PORT = 3000 } = process.env;
 
-app.use(cors());
+app.use('*', cors({
+  origin: 'https://mestobm.students.nomoreparties.xyz',
+  credentials: true,
+}));
 
-const mongoDbUrl = 'mongodb://127.0.0.1:27017/mestodb';
+const mongoDbUrl = 'mongodb://127.0.0.1:27017';
 const mongooseConnectOptions = {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -31,35 +33,38 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(requestLogger);
 
-
+app.post('/signin', celebrate({
+  body: Joi.object().keys({
+    email: Joi.string().required().email(),
+    password: Joi.string().required().min(8),
+  }),
+}), login);
+app.post('/signup', celebrate({
+  body: Joi.object().keys({
+    email: Joi.string().required().email(),
+    password: Joi.string().required().min(8),
+  }),
+}), createUser);
 
 app.use(auth);
 
 app.use('/users', auth, usersRoutes);
 app.use('/cards', auth, cardsRoutes);
 
-app.use('/', routerIndex);
 app.use(errorLogger);
-
-// Централизованная обработка ошибок
 app.use(errors());
 
-app.use(() => {
-  throw new NotFoundError('The requested resource is not found');
-});
-
-// здесь обрабатываем все ошибки
 // eslint-disable-next-line no-unused-vars
-app.use((err, req, res, next) => {
-  const { status = 500, message } = err;
-
-  res.status(status).send({
-    message: status === 500 ? 'На сервере произошла ошибка' : message,
-  });
-  next();
+app.use((err, _req, res, _next) => {
+  const { statusCode = 500, message } = err;
+  res
+    .status(statusCode)
+    .send({
+      message: statusCode === 500 ? 'Внутренняя ошибка сервера' : message,
+    });
 });
 
 app.listen(PORT, () => {
   // eslint-disable-next-line no-console
-  console.log(`App listening on port ${PORT}`);
+  console.log(`Сервер запущен на порту: ${PORT}`);
 });
