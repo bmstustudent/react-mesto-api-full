@@ -18,15 +18,15 @@ router.get('/:userId', celebrate({
 }), getUser);
 router.patch('/me', celebrate({
   body: Joi.object().keys({
-    name: Joi.string().trim().min(2).max(30).required()
+    name: Joi.string().trim().min(2).max(30)
       .default(defaultValues.NAME),
-    about: Joi.string().trim().min(2).max(30).required()
+    about: Joi.string().trim().min(2).max(30)
       .default(defaultValues.ABOUT),
   }),
 }), updateProfile);
 router.patch('/me/avatar', celebrate({
   body: Joi.object().keys({
-    avatar: Joi.string().trim().uri().required()
+    avatar: Joi.string().trim().uri()
       .default(defaultValues.AVATAR),
   }),
 }), updateAvatar);

@@ -372,23 +372,23 @@ function App() {
             {isLoggedIn ? (
               <Redirect to="/" />
             ) : (
-                <Register
-                  onChange={setUser}
-                  handleSubmit={handleRegistration}
-                  user={newUser}
-                />
-              )}
+              <Register
+                onChange={setUser}
+                handleSubmit={handleRegistration}
+                user={newUser}
+              />
+            )}
           </Route>
           <Route path="/signin">
             {isLoggedIn ? (
               <Redirect to="/" />
             ) : (
-                <Login
-                  onChange={setUser}
-                  handleSubmit={handleSignIn}
-                  user={newUser}
-                />
-              )}
+              <Login
+                onChange={setUser}
+                handleSubmit={handleSignIn}
+                user={newUser}
+              />
+            )}
           </Route>
           <Route path="*">
             <Redirect to="/" />
