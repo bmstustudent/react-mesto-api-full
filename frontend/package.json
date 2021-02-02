@@ -13,7 +13,7 @@
   },
   "scripts": {
     "predeploy": "npm run build",
-    "deploy": "scp -r ./build/* bmstustudent@84.252.131.188:/home/bmstustudent/react-mesto-api-full/frontend-build",
+    "deploy": "scp -r ./build/* bmstustudent@84.252.131.188:/home/bmstu/react-mesto-api-full/frontend/frontend-build",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "eject": "react-scripts eject"
@@ -45,7 +45,7 @@
     "css",
     "react"
   ],
-  "author": "Shults Pavel>",
+  "author": "Shults Pavel",
   "license": "ISC",
   "homepage": "/"
 }
