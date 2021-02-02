@@ -6,7 +6,7 @@
  * @param {string} likes путь для добавления/снятия лайка
  */
 const apiPaths = {
-  BASE_URL: 'https://api.mestobm.students.nomoreparties.xyz',
+  BASE_URL: 'https://api.mestobmstu.students.nomoreparties.xyz',
   CARDS: '/cards',
   LIKES: '/likes',
   ME: '/users/me',

@@ -15,7 +15,7 @@ const routes = require('./routes');
 const app = express();
 const { PORT = 3000 } = process.env;
 
-mongoose.connect('mongodb://127.0.0.1:27017/mesto', {
+mongoose.connect('mongodb://127.0.0.1:27017/mestodb', {
   useNewUrlParser: true,
   useCreateIndex: true,
   useFindAndModify: false,
@@ -23,7 +23,7 @@ mongoose.connect('mongodb://127.0.0.1:27017/mesto', {
 });
 
 app.use('*', cors({
-  origin: 'https://mestobm.students.nomoreparties.xyz',
+  origin: 'https://mestobmstu.students.nomoreparties.xyz',
   credentials: true,
 }));
 

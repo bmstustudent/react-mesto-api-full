@@ -1,7 +1,7 @@
 {
-  "name": "mesto-react",
+  "name": "yandex-mesto",
   "version": "1.0.0",
-  "description": "Mesto Russia",
+  "description": "Yandex Mesto project",
   "main": "index.js",
   "scripts": {
     "start": "node app.js",
