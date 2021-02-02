@@ -1,0 +1,7 @@
+.elements__list-item {
+  background-color: #fff;
+  border-radius: 10px;
+  overflow: hidden;
+  position: relative;
+  transition: all 300ms;
+}
