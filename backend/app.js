@@ -23,7 +23,7 @@ mongoose.connect('mongodb://127.0.0.1:27017/mestobd', {
 });
 
 app.use('*', cors({
-  origin: 'https://mestobm.students.nomoreparties.xyz',
+  origin: 'https://mestobmstu.students.nomoreparties.xyz',
   credentials: true,
 }));
 
