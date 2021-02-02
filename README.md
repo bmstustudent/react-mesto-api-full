@@ -6,4 +6,4 @@
 На сервере есть 2 папки: 1.react-mesto-api-full/backend (для бэкэнда)
 2.react-mesto-api-full/frontend (из этой папки делаем npm run build или локально npm run deploy)
 
-Сайт: https://mestobm.students.nomoreparties.xyz/
+Сайт: https://mestobmstu.students.nomoreparties.xyz/
