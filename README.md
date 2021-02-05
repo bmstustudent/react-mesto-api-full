@@ -30,6 +30,8 @@ Mesto-Russia-api-full
 
 ## 🎥Превью🎥
 
+![Preview](https://github.com/bmstustudent/react-mesto-api-full/blob/main/gif/mesto-api.gif)
+
 ## ✅Стек✅
 
 - JavaScript ES6
